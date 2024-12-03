@@ -1,0 +1,20 @@
+
+  [
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": 1234567890,
+      "password": "$2b$10$IPLxWGeKA.hJePar0OASY.eir9ed/9/d/FpB0xpmuUa9pNUPvT3He",
+      "role": 1,
+      "isVerified":true
+      
+    },
+    {
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "phone": 9876543210,
+      "password": "$2b$10$IPLxWGeKA.hJePar0OASY.eir9ed/9/d/FpB0xpmuUa9pNUPvT3He",
+      "role": 1,
+      "isVerified":false
+    }
+  ]
