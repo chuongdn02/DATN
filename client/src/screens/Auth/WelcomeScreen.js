@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ImageBackground } from 'react-native';
 const WelcomeScreen = ({ navigation }) => {
   return (
     <ImageBackground
-      source={require('../../assets/images/bg-all-5.jpg')} // Đường dẫn ảnh nền
+      source={require('../../assets/images/bg-all-5.jpg')}
       className="flex-1"
       resizeMode="cover"
     >
@@ -19,7 +19,7 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('GetInfo')} // Điều hướng màn hình khác
+          onPress={() => navigation.navigate('Login')} // Điều hướng màn hình khác
           className="bg-rose-500 flex items-center justify-center mx-auto rounded-full h-14 w-80 border-[2px] border-neutral-200"
         >
           <Text className="text-white text-center tracking-widest font-bold text-xl">

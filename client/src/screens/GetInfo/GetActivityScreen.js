@@ -55,7 +55,7 @@ const GetActivityScreen = ({ route, navigation }) => {
     className="flex-1"
     resizeMode="cover"
   >
-    <View className="flex-1">
+    <View className="flex-1  bg-[#1a202c]">
       <SafeAreaView className="flex">
         <View className="flex justify-start">
           <Text className="text-2xl text-yellow-300 font-bold text-center">

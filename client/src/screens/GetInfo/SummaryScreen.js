@@ -23,8 +23,8 @@ const SummaryScreen = ({ navigation, route }) => {
       <Text style={styles.title}>Goal: {record.goal}</Text>
       <Text style={styles.title}>Goal: {record.goal}</Text>
       <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
+        title="Go to Home"
+        onPress={() => navigation.navigate('Home')}
       />
       <Button
         title="Go to Settings"

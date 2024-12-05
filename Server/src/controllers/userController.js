@@ -4,10 +4,9 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 require('dotenv').config();
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateToken = (userId, name) => {
+  return jwt.sign({ userId, name }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
-
 const sendVerificationEmail = async (email, userId) => {
   try {
     const token = generateToken(userId);
@@ -109,7 +108,7 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ msg: 'Please verify your email address before logging in' });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, user.name);
     return res.json({ token });
   } catch (err) {
     console.error('Server error:', err.message);

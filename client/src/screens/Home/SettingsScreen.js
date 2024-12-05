@@ -1,94 +1,92 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import moment from 'moment';
 
-const NightScreen = () => {
+const NutritionTracker = () => {
+  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+
+  // Tạo tuần hiện tại
+  const currentDate = moment(selectedDate);
+  const weekDays = Array.from({ length: 7 }).map((_, i) =>
+    currentDate.clone().startOf('week').add(i, 'days')
+  );
+
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <LinearGradient
-        colors={['#0F2027', '#203A43', '#2C5364']}
-        style={styles.gradientBackground}
-      >
-        <View style={styles.header}>
-          <Text style={styles.greetingText}>Good night</Text>
-          <Text style={styles.dateText}>28 February, 2020</Text>
-        </View>
-        <View style={styles.toggleContainer}>
-          <Text style={styles.toggleText}>Meditation Zen</Text>
-          {/* Add Toggle Switch here */}
-        </View>
-        <View style={styles.content}>
-          <Text style={styles.programmingText}>Programming</Text>
-          <View style={styles.activityCard}>
-            <Text style={styles.activityTitle}>Meditation Zen</Text>
-            <Text style={styles.activitySubtitle}>In progress</Text>
-          </View>
-          <View style={styles.activityCard}>
-            <Text style={styles.activityTitle}>Bedtime</Text>
-            <Text style={styles.activitySubtitle}>To do</Text>
+    <View className="flex-1 bg-gray-900 p-4">
+      {/* Thanh thống kê */}
+      <View className="flex-row justify-between mb-4">
+        {/* Calories */}
+        <View className="flex-1 items-center">
+          <Text className="text-white text-base font-bold">800/2418</Text>
+          <Text className="text-gray-400 text-sm">Calories (kCal)</Text>
+          <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
+            <View className="h-2 bg-yellow-400 rounded-full" style={{ width: '33%' }} />
           </View>
         </View>
-      </LinearGradient>
-    </ScrollView>
+
+        {/* Carbs */}
+        <View className="flex-1 items-center mx-2">
+          <Text className="text-white text-base font-bold">40/30</Text>
+          <Text className="text-gray-400 text-sm">Carbs (g)</Text>
+          <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
+            <View className="h-2 bg-green-500 rounded-full" style={{ width: '70%' }} />
+          </View>
+        </View>
+
+        {/* Protein */}
+        <View className="flex-1 items-center mx-2">
+          <Text className="text-white text-base font-bold">70/151</Text>
+          <Text className="text-gray-400 text-sm">Protein (g)</Text>
+          <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
+            <View className="h-2 bg-red-500 rounded-full" style={{ width: '46%' }} />
+          </View>
+        </View>
+
+        {/* Fat */}
+        <View className="flex-1 items-center">
+          <Text className="text-white text-base font-bold">70/188</Text>
+          <Text className="text-gray-400 text-sm">Fat (g)</Text>
+          <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
+            <View className="h-2 bg-orange-500 rounded-full" style={{ width: '37%' }} />
+          </View>
+        </View>
+      </View>
+
+      {/* Lịch */}
+      <View className="flex-row justify-between mb-4">
+        {weekDays.map((day, index) => (
+          <View key={index} className="items-center">
+            <Text className="text-gray-400 text-sm">{day.format('ddd').toUpperCase()}</Text>
+            <TouchableOpacity
+              onPress={() => handleDateSelect(day.format('YYYY-MM-DD'))}
+              className={`w-10 h-10 rounded-full items-center justify-center mt-2 ${
+                selectedDate === day.format('YYYY-MM-DD') ? 'bg-green-500' : 'bg-transparent'
+              }`}
+            >
+              <Text
+                className={`text-sm ${
+                  selectedDate === day.format('YYYY-MM-DD')
+                    ? 'text-white font-bold'
+                    : 'text-gray-400'
+                }`}
+              >
+                {day.format('D')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+
+      {/* Ngày hiện tại */}
+      <Text className="text-gray-400 text-center text-sm">
+        {currentDate.format('dddd, DD MMMM YYYY')}
+      </Text>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradientBackground: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    marginBottom: 30,
-  },
-  greetingText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  dateText: {
-    fontSize: 16,
-    color: '#fff',
-    marginTop: 5,
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  toggleText: {
-    fontSize: 16,
-    color: '#fff',
-  },
-  content: {
-    marginTop: 30,
-  },
-  programmingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 20,
-  },
-  activityCard: {
-    backgroundColor: '#3a3a3c',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 15,
-  },
-  activityTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  activitySubtitle: {
-    fontSize: 14,
-    color: '#ddd',
-    marginTop: 5,
-  },
-});
-
-export default NightScreen;
+export default NutritionTracker;

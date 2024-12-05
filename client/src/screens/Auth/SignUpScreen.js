@@ -34,7 +34,7 @@ const SignUpScreen = () => {
     className="flex-1"
     resizeMode="cover"
   >
-    <View className="flex-1">
+    <View className="flex-1 ">
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
