@@ -9,6 +9,7 @@ import GetActivityScreen from '../screens/GetInfo/GetActivityScreen';
 import GetGoalScreen from '../screens/GetInfo/GetGoalScreen';
 import TabNavigator from './HomeRoutes/TabNavigator';
 import SummaryScreen from '../screens/GetInfo/SummaryScreen';
+import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -27,6 +28,7 @@ const AppNavigator = () => {
         <Stack.Screen name="GetActivity" component={GetActivityScreen} />
         <Stack.Screen name="GetGoal" component={GetGoalScreen} />
         <Stack.Screen name="Summary" component={SummaryScreen} />
+        <Stack.Screen name="TrackGoal" component={TrackGoalScreen} />
 
     </Stack.Navigator>
   </NavigationContainer>
