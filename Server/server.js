@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const userRoutes = require('./src/routes/user');
 const healthRoutes = require('./src/routes/health');
+const chatbotRoutes = require('./src/routes/chatbotRoutes');
 
 // Load environment variables from .env file
 const mongoose = require('mongoose');
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use('/auth', userRoutes);
 app.use('/api/health', healthRoutes);
+app.use('/api', chatbotRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

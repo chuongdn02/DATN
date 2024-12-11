@@ -3,12 +3,14 @@ import { View, TextInput, Text, TouchableOpacity, Image, ScrollView, SafeAreaVie
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import DailyStats from './Components/DailyStats';
+import Category from './Components/Category';
 
-const DashboardScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
-  const [isChatOpen, setIsChatOpen] = useState(false); // State to toggle chat navbar
-  const screenWidth = Dimensions.get('window').width; // Get screen width for animation
-  const translateX = useState(new Animated.Value(screenWidth))[0]; // Initial position off-screen
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const screenWidth = Dimensions.get('window').width;
+  const translateX = useState(new Animated.Value(screenWidth))[0];
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const scrollViewRef = useRef(null);
@@ -28,7 +30,7 @@ const DashboardScreen = ({ navigation }) => {
     "2024-12-14": { calories: 800, carbs: 40, protein: 70, fat: 50 },
   }), []);
 
-  const data = { calories: 1500, carbs: 50, protein: 80, fat: 60 }
+  const data = { calories: 2000, carbs: 50, protein: 80, fat: 60 };
 
 
   const [dailyStats, setDailyStats] = useState(mockData[selectedDate] || { calories: 0, carbs: 0, protein: 0, fat: 0 });
@@ -40,33 +42,59 @@ const DashboardScreen = ({ navigation }) => {
     setDailyStats(mockData[selectedDate] || { calories: 0, carbs: 0, protein: 0, fat: 0 });
   }, [selectedDate, mockData]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (message.trim()) {
+      // Add the user's message to the chat
       setMessages((prevMessages) => [...prevMessages, { text: message, sender: 'user' }]);
       setMessage('');
-      setTimeout(() => {
+      try {
+        const response = await fetch('http://localhost:3000/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: message }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: data.content || 'No response received.', sender: 'system' },
+          ]);
+        } else {
+          console.error('Error:', response.statusText);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: 'Sorry, there was an error with the server.', sender: 'system' },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error:', error);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: 'This is a system response to your message.', sender: 'system' },
+          { text: 'Failed to connect to the server.', sender: 'system' },
         ]);
-      }, 1000);
+      }
     }
   };
 
   useEffect(() => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true });
-    }
-  }, [messages]);
+    const timeout = setTimeout(() => {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollToEnd({ animated: true });
+      }
+    }, 50);
+    return () => clearTimeout(timeout); // Clear the timeout to prevent memory leaks
+  }, [isChatOpen, messages]);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      setGreeting('Chào buổi sáng,');
+      setGreeting('Good morning,');
     } else if (currentHour < 18) {
-      setGreeting('Buổi trưa vui vẻ,');
+      setGreeting('Good after noon,');
     } else {
-      setGreeting('Buổi tối an lành,');
+      setGreeting('Good evening,');
     }
   }, []);
 
@@ -90,7 +118,6 @@ const DashboardScreen = ({ navigation }) => {
   const weekDays = Array.from({ length: 7 }).map((_, i) =>
     currentDate.clone().startOf('week').add(i, 'days')
   );
-
   return (
     <View className="flex-1 bg-[#1a202c] px-5 ">
       <View className="flex-col">
@@ -118,60 +145,7 @@ const DashboardScreen = ({ navigation }) => {
 
         <View className="flex-1 bg-gray-900 p-2 rounded-lg mb-2">
           <View className="flex-row justify-between mb-4">
-            <View className="flex-1 items-center mx-2">
-              <Text className="text-white text-base font-bold">{dailyStats.calories}/{data.calories}</Text>
-              <Text className="text-gray-400 text-sm">Calo (kCal)</Text>
-              <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
-                <View
-                  className="h-2 bg-yellow-400 rounded-full"
-                  style={{
-                    width: `${(dailyStats.calories / 2418) * 100}%`,
-                    maxWidth: '100%',
-                  }}
-                />
-              </View>
-            </View>
-            <View className="flex-1 items-center mx-2">
-              <Text className="text-white text-base font-bold">{dailyStats.carbs}/{data.carbs}</Text>
-              <Text className="text-gray-400 text-sm">Carbs (g)</Text>
-              <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
-                <View
-                  className="h-2 bg-green-500 rounded-full"
-                  style={{
-                    width: `${(dailyStats.carbs / 300) * 100}%`,
-                    maxWidth: '100%',
-                  }}
-                />
-              </View>
-            </View>
-
-            <View className="flex-1 items-center mx-2">
-              <Text className="text-white text-base font-bold">{dailyStats.protein}/{data.protein}</Text>
-              <Text className="text-gray-400 text-sm">Protein (g)</Text>
-              <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
-                <View
-                  className="h-2 bg-red-500 rounded-full"
-                  style={{
-                    width: `${(dailyStats.protein / 150) * 100}%`,
-                    maxWidth: '100%',
-                  }}
-                />
-              </View>
-            </View>
-
-            <View className="flex-1 items-center  mx-2">
-              <Text className="text-white text-base font-bold">{dailyStats.fat}/{data.fat}</Text>
-              <Text className="text-gray-400 text-sm">Fat (g)</Text>
-              <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
-                <View
-                  className="h-2 bg-orange-500 rounded-full"
-                  style={{
-                    width: `${(dailyStats.fat / 70) * 100}%`,
-                    maxWidth: '100%',
-                  }}
-                />
-              </View>
-            </View>
+          <DailyStats stats={dailyStats} data={data} />
           </View>
         </View>
         <View className="flex-1">
@@ -227,72 +201,8 @@ const DashboardScreen = ({ navigation }) => {
       {activeTab === 'Overview' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text className="text-white text-lg font-bold my-2">Recently played</Text>
-          ;
+          <Category navigation={navigation} />
 
-          <View className="flex-row flex-wrap justify-between">
-            {/* Menu Suggestion */}
-            <TouchableOpacity
-              onPress={() => console.log('Menu Suggestion clicked')}
-              className="bg-green-400/50 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
-            >
-              <View>
-                <Text className="text-white text-2xl font-bold">
-                  Menu{'\n'}Suggestion
-                </Text>
-              </View>
-              <View className="flex items-end">
-                <Icon name="restaurant-outline" size={50} color="#FFFFFF" />
-              </View>
-            </TouchableOpacity>
-
-            {/* Add Calories */}
-            <TouchableOpacity
-              onPress={() => console.log('Add Calories clicked')}
-              className="bg-yellow-400/50 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
-            >
-              <View>
-                <Text className="text-white text-2xl font-bold">
-                  Add{'\n'}Calories
-                </Text>
-              </View>
-              <View className="flex items-end">
-                <Icon name="fast-food-outline" size={50} color="#FFFFFF" />
-              </View>
-            </TouchableOpacity>
-
-            {/* Track Goal */}
-            <TouchableOpacity
-              onPress={() => navigation.navigate('TrackGoal')}
-              className="bg-rose-400/50 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
-            >
-              <View>
-                <Text className="text-white text-2xl font-bold">
-                  Track{'\n'}Goal
-                </Text>
-              </View>
-              <View className="flex items-end">
-                <Icon name="flag-outline" size={50} color="#FFFFFF" />
-              </View>
-            </TouchableOpacity>
-
-            {/* Other Meal Plans */}
-            <TouchableOpacity
-              onPress={() => console.log('Other Meal Plans clicked')}
-              className="bg-orange-400/50 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
-            >
-              <View>
-                <Text className="text-white text-2xl font-bold">
-                  Other{'\n'}Meal Plans
-                </Text>
-              </View>
-              <View className="flex items-end">
-                <Icon name="file-tray-outline" size={50} color="#FFFFFF" />
-              </View>
-            </TouchableOpacity>
-          </View>
-
-
-          {/* Favorites Section */}
           <Text className="text-white text-lg font-bold my-2">Your favorites</Text>
           <View className="flex-row justify-between mb-5">
             <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
@@ -379,7 +289,7 @@ const DashboardScreen = ({ navigation }) => {
             <TouchableOpacity onPress={toggleChatNavbar}>
               <Icon name="close-outline" size={30} color="#FFFFFF" />
             </TouchableOpacity>
-            <Text className="text-white text-lg font-bold">Chat</Text>
+            <Text className="text-rose-500 text-2xl font-bold">Chat</Text>
             <Text className="text-white text-lg font-bold mb-5">What can I help with?</Text>
 
             {/* Chat Messages */}
@@ -429,4 +339,4 @@ const DashboardScreen = ({ navigation }) => {
   );
 };
 
-export default DashboardScreen;
+export default HomeScreen;

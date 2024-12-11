@@ -16,8 +16,8 @@ const GetInfoScreen = ({ navigation }) => {
   });
   const [gender, setGender] = useState(null);
   const [age, setAge] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('162');
+  const [weight, setWeight] = useState('62');
 
   const handleNext = () => {
     if (!gender || !age || !height || !weight) {

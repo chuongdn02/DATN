@@ -6,12 +6,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import ProfileScreen from '../../screens/Home/ProfileScreen';
 import HomeScreen from '../../screens/Home/HomeScreen';
 import SettingsScreen from '../../screens/Home/SettingsScreen';
+import BlogScreen from '../../screens/Home/BlogScreen';
+import NotificationScreen from '../../screens/Home/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
     return (
         <Tab.Navigator
+        initialRouteName="Home"
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused }) => {
                     let iconName;
@@ -66,10 +69,10 @@ const TabNavigator = () => {
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Blog" component={HomeScreen} />
-            <Tab.Screen name="Notifications" component={ProfileScreen} />
+            <Tab.Screen name="Blog" component={BlogScreen} />
+            <Tab.Screen name="Notifications" component={NotificationScreen} />
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Profile" component={SettingsScreen} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
             <Tab.Screen name="Setting" component={SettingsScreen} />
         </Tab.Navigator>
     );

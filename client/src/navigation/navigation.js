@@ -10,6 +10,7 @@ import GetGoalScreen from '../screens/GetInfo/GetGoalScreen';
 import TabNavigator from './HomeRoutes/TabNavigator';
 import SummaryScreen from '../screens/GetInfo/SummaryScreen';
 import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
+import AddCaloScreen from '../screens/AddFood/AddCaloScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -29,6 +30,8 @@ const AppNavigator = () => {
         <Stack.Screen name="GetGoal" component={GetGoalScreen} />
         <Stack.Screen name="Summary" component={SummaryScreen} />
         <Stack.Screen name="TrackGoal" component={TrackGoalScreen} />
+        <Stack.Screen name="AddCalo" component={AddCaloScreen} />
+
 
     </Stack.Navigator>
   </NavigationContainer>

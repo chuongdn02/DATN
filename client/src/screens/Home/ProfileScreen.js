@@ -1,174 +1,135 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, SafeAreaView, TouchableOpacity, Animated, Dimensions } from 'react-native';
-import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 
-const HomeScreen = () => {
-  const [greeting, setGreeting] = useState('');
-  const [isNavbarVisible, setNavbarVisible] = useState(false);
-  const slideAnim = useState(new Animated.Value(Dimensions.get('window').width))[0];
-  const name = useSelector((state) => state.auth.user.user?.name || 'Guest');
+const ChatbotScreen = () => {
+  const [messages, setMessages] = useState([
+    { id: '1', text: 'Chào bạn! Tôi có thể giúp gì cho bạn hôm nay?', sender: 'bot' }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const currentHour = new Date().getHours();
-    if (currentHour < 12) {
-      setGreeting('Good morning,');
-    } else if (currentHour < 18) {
-      setGreeting('Good afternoon,');
-    } else {
-      setGreeting('Good evening,');
+  const sendMessage = async () => {
+    if (inputMessage.trim() === '') {
+      console.warn('Cannot send an empty message.');
+      return;
     }
-  }, []);
 
-  const toggleNavbar = () => {
-    if (isNavbarVisible) {
-      // Hide Navbar
-      Animated.timing(slideAnim, {
-        toValue: Dimensions.get('window').width,
-        duration: 300,
-        useNativeDriver: false,
-      }).start(() => setNavbarVisible(false));
-    } else {
-      // Show Navbar
-      setNavbarVisible(true);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
+    const newMessages = [
+      ...messages,
+      { id: `${messages.length + 1}`, text: inputMessage, sender: 'user' },
+    ];
+    setMessages(newMessages);
+    setInputMessage('');
+    setIsLoading(true);
+
+    try {
+      const url = 'http://localhost:3000/api/chat';
+
+      console.log('Sending request to:', url);
+      console.log('Payload:', { message: inputMessage });
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: inputMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      const botMessage = {
+        id: `${messages.length + 2}`,
+        text: data.content, // Assuming the API response includes `content`
+        sender: 'bot',
+      };
+      setMessages(prevMessages => [...prevMessages, botMessage]);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0C1B44]">
-      {isNavbarVisible && (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            right: slideAnim,
-            top: 0,
-            bottom: 0,
-            width: Dimensions.get('window').width * 0.75,
-            backgroundColor: '#232429',
-            zIndex: 50,
-            padding: 20,
-          }}
-        >
-          <SafeAreaView>
-            <Text className="text-black text-xl font-bold mb-5">Good morning!</Text>
-            <TouchableOpacity className="bg-blue-500 p-2 rounded-lg mb-5">
-              <Text className="text-white text-center">Search</Text>
-            </TouchableOpacity>
-
-            {/* Favorite Apps Section */}
-            <Text className="text-black text-lg font-bold mb-2">Favorite Apps</Text>
-            <View>
-              <Text className="text-white text-base mb-2">📷 Camera</Text>
-              <Text className="text-white text-base mb-2">🖼️ Gallery</Text>
-              <Text className="text-white text-base mb-2">📘 Facebook</Text>
-              <Text className="text-white text-base mb-2">🌐 Google+</Text>
-              <Text className="text-white text-base mb-2">🌍 Internet</Text>
-            </View>
-
-            {/* Settings Section */}
-            <Text className="text-black text-lg font-bold mt-5 mb-2">Settings</Text>
-            <View>
-              <Text className="text-black text-base mb-2">🔅 Dark Mode</Text>
-              <Text className="text-black text-base mb-2">📱 Nav Bar</Text>
-              <Text className="text-black text-base mb-2">📶 Wi-Fi</Text>
-            </View>
-
-            {/* Back Button */}
-            <TouchableOpacity onPress={toggleNavbar} className="mt-5">
-              <Text className="text-blue-500 text-center">⬅️ Back</Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-        </Animated.View>
-      )}
-
-      {/* Main Screen */}
-      <View className="flex-1 p-5 pb-20">
-        <View className="flex-row items-center justify-between">
-          <Image
-            source={require('../../assets/images/person.png')}
-            className="w-12 h-12 rounded-full mb-2 border-white border-[1px]"
-          />
-          <TouchableOpacity onPress={toggleNavbar}>
-            <Icon name="settings-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-        <Text className="text-white text-lg">{greeting}</Text>
-        <Text className="text-white text-2xl font-bold">{name}</Text>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Text className="text-white text-lg font-bold my-2">Recently played</Text>
-          <View className="flex-row justify-between mb-5">
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={require('../../assets/images/bg-all.jpg')}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Daily calm</Text>
-              <Text className="text-gray-400 text-sm">10 min</Text>
-            </View>
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={require('../../assets/images/person.png')}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Stay happy</Text>
-              <Text className="text-gray-400 text-sm">10 min</Text>
-            </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <FlatList
+        data={messages}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={item.sender === 'bot' ? styles.botMessage : styles.userMessage}>
+            <Text style={styles.messageText}>{item.text}</Text>
           </View>
+        )}
+        inverted
+      />
 
-          {/* Favorites Section */}
-          <Text className="text-white text-lg font-bold my-2">Your favorites</Text>
-          <View className="flex-row justify-between mb-5">
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={{ uri: 'https://example.com/train-your-mind-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Train your mind</Text>
-              <Text className="text-gray-400 text-sm">10 min</Text>
-            </View>
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={{ uri: 'https://example.com/sunset-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Sunset vibes</Text>
-              <Text className="text-gray-400 text-sm">10 min</Text>
-            </View>
-          </View>
-          <Text className="text-white text-lg font-bold my-2">Explore more</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
-            <View className="bg-[#1C2D5A] rounded-lg w-36 p-3 mr-3">
-              <Image
-                source={{ uri: 'https://example.com/explore-1-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Morning vibes</Text>
-            </View>
-            <View className="bg-[#1C2D5A] rounded-lg w-36 p-3 mr-3">
-              <Image
-                source={{ uri: 'https://example.com/explore-2-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Relaxation</Text>
-            </View>
-            <View className="bg-[#1C2D5A] rounded-lg w-36 p-3">
-              <Image
-                source={{ uri: 'https://example.com/explore-3-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Focus time</Text>
-            </View>
-          </ScrollView>
-        </ScrollView>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          value={inputMessage}
+          onChangeText={setInputMessage}
+          placeholder="Nhập tin nhắn..."
+        />
+        <Button
+          title={isLoading ? 'Đang trả lời...' : 'Gửi'}
+          onPress={sendMessage}
+          disabled={isLoading}
+        />
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
-export default HomeScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+    backgroundColor: '#f0f0f0',
+  },
+  botMessage: {
+    backgroundColor: '#d1e7dd',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    marginLeft: 10,
+    marginRight: 50,
+  },
+  userMessage: {
+    backgroundColor: '#e2e3e5',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    marginRight: 10,
+    marginLeft: 50,
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+  },
+  input: {
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginRight: 10,
+  },
+});
+
+export default ChatbotScreen;
