@@ -16,7 +16,7 @@ export const getChatCompletion = async (req, res) => {
           content: "[Bạn là một chuyên gia dinh dưỡng Tiếng Việt]"+message+"Hãy trả lời tất cả bằng Tiếng Việt, ngắn gọn, rõ ràng và chính xác",
         },
       ],
-      model: "llama3-8b-8192",
+      model: "gemma2-9b-it",
     });
     res.json({
       content: chatCompletion.choices[0]?.message?.content || "",

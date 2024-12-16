@@ -12,6 +12,8 @@ const GetInfoScreen = ({ navigation }) => {
     height: '',
     weight: '',
     goal: '',
+    goal_weight:'',
+    intensity:'',
     checked: false,
   });
   const [gender, setGender] = useState(null);
@@ -50,8 +52,8 @@ const GetInfoScreen = ({ navigation }) => {
           <Text className="text-base text-white font-bold mb-2">Giới tính:</Text>
           <View className="flex-row justify-around mb-8">
             <TouchableOpacity
-              onPress={() => setGender('Girl')}
-              className={`items-center p-3 rounded-lg border ${gender === 'Girl' ? 'bg-pink-200 border-pink-400' : ' border-white border-[1px] bg-white/30'
+              onPress={() => setGender('female')}
+              className={`items-center p-3 rounded-lg border ${gender === 'female' ? 'bg-pink-200 border-pink-400' : ' border-white border-[1px] bg-white/30'
                 }`}
             >
               <Image
@@ -61,8 +63,8 @@ const GetInfoScreen = ({ navigation }) => {
               <Text className="text-base text-white font-bold">Nữ</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setGender('Boy')}
-              className={`items-center p-3 rounded-lg border ${gender === 'Boy' ? 'bg-blue-200 border-blue-400' : '  border-white border-[1px] bg-white/30'
+              onPress={() => setGender('male')}
+              className={`items-center p-3 rounded-lg border ${gender === 'male' ? 'bg-blue-200 border-blue-400' : '  border-white border-[1px] bg-white/30'
                 }`}
             >
               <Image
@@ -102,7 +104,7 @@ const GetInfoScreen = ({ navigation }) => {
               min={0}
               max={250}
               step={1}
-              initialValue={62}
+              initialValue={162}
               showMarks
               showLabels
               rulerColor="#FFC107"
@@ -116,9 +118,9 @@ const GetInfoScreen = ({ navigation }) => {
               value={weight}
               onValueChange={setWeight}
               min={0}
-              max={250}
+              max={200}
               step={1}
-              initialValue={162}
+              initialValue={62}
               showMarks
               showLabels
               rulerColor="#FFC107"

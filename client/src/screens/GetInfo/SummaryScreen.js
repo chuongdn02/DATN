@@ -1,154 +1,175 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image, SafeAreaView } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ImageBackground, ScrollView, Alert } from 'react-native';
 import { Svg, Path, Circle, Text as SvgText } from 'react-native-svg';
 import { scaleLinear } from 'd3-scale';
 import { line, curveCardinal } from 'd3-shape';
+import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const TrackGoalScreen = ({navigation}) => {
-    const data = [
-        { weight: 52, alt: 'start' },
-        { weight: 51.5, alt: 'current' },
-        { weight: 47, alt: 'goal' },
-    ];
+const SummaryScreen = ({ navigation, route }) => {
+  const { record } = route.params;
+  const userId = useSelector((state) => state.auth.user.user.userId);
+  const weight = Math.round(record.weight);
+  const goal_weight = Math.round(record.goal_weight);
+  const time = Math.round(record.time);
+  const today = new Date();
 
-    // Define scales for x and y axes
-    const xScale = scaleLinear()
-        .domain([0, data.length - 1]) // From 0 to the last index of the data array
-        .range([15, 285]); // Set the range for the x-axis, dividing the space evenly
+  const goalDate = new Date(today);
+goalDate.setDate(today.getDate() + time * 7);
 
-    const yScale = scaleLinear()
-        .domain([
-            Math.min(...data.map((d) => d.weight)) - 2,
-            Math.max(...data.map((d) => d.weight)) + 2,
-        ]) // Add padding to avoid clipping
-        .range([150, 0]);
+  const formattedToday = today.toLocaleDateString(); // Format today's date for display
+const formattedGoalDate = goalDate.toLocaleDateString();
 
-    const lineGenerator = line()
-        .x((d, index) => xScale(index)) // Use index for x value instead of date
-        .y((d) => yScale(d.weight))
-        .curve(curveCardinal.tension(0.9));
+const data = [
+  { weight: weight, alt: 'start', date: formattedToday },
+  { weight: weight, alt: 'current', date: formattedToday },
+  { weight: goal_weight, alt: 'goal', date: formattedGoalDate },
+];
 
-    return (
-        <SafeAreaView className="bg-black flex-1">
-            <View className="flex-1  px-4">
-                {/* Header */}
-                <View className="flex-row justify-between items-center mt-4">
-                    <TouchableOpacity>
-                        <Text className="text-white text-2xl">{'<'}</Text>
-                    </TouchableOpacity>
-                    <Text className="text-white text-lg font-bold">Track Goal</Text>
-                    <TouchableOpacity  onPress={() => navigation.navigate('Home')}>
-                        <Text className="text-teal-400 text-base">Add Weight+</Text>
-                    </TouchableOpacity>
-                </View>
+  // Define scales for x and y axes
+  const xScale = scaleLinear().domain([0, data.length - 1]).range([25, 275]);
+  const yScale = scaleLinear()
+    .domain([
+      Math.min(...data.map((d) => d.weight)) - 15,
+      Math.max(...data.map((d) => d.weight)) + 15,
+    ])
+    .range([150, 0]);
 
-                {/* Status Message */}
-                <Text className="text-green-400 text-xl font-bold my-4 text-center">
-                    You are doing well!
-                </Text>
+  const lineGenerator = line()
+    .x((d, index) => xScale(index))
+    .y((d) => yScale(d.weight))
+    .curve(curveCardinal.tension(0.9));
 
-                {/* Weight Cards */}
-                <View className="flex-row justify-between mb-4">
-                    <View className="flex-1 mx-2 items-center p-4 rounded-lg bg-neutral-900">
-                        <Text className="text-white text-sm">Current Weight</Text>
-                        <Text className="text-red-400 text-lg font-bold">51.0 Kg</Text>
-                    </View>
-                    <View className="flex-1 mx-2 items-center p-4 rounded-lg bg-neutral-900">
-                        <Text className="text-white text-sm">Maintain Weight</Text>
-                        <Text className="text-white text-lg font-bold">0 Kg</Text>
-                    </View>
-                </View>
+  const handleConfirm = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/auth/users/${userId}/record`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(record),
+      });
 
-                {/* Goal vs Actual Toggle */}
-                <View className="flex-row justify-center mb-4">
-                    <TouchableOpacity className="px-4 py-2 rounded-lg bg-teal-400">
-                        <Text className="text-black">Goal</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity className="px-4 py-2 rounded-lg bg-neutral-700 ml-2">
-                        <Text className="text-white">Actual</Text>
-                    </TouchableOpacity>
-                </View>
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+        return;
+      }
 
-                {/* Graph */}
-                <View className="items-center mb-4 p-4 bg-neutral-900 rounded-lg">
-                    <Svg height="200" width="300">
-                        {/* Line Path */}
-                        <Path
-                            d={lineGenerator(data)}
-                            fill="none"
-                            stroke="#00FFAA"
-                            strokeWidth={5}
-                        />
-                        {/* Circles and Labels on Data Points */}
-                        {data.map((point, index) => (
-                            <React.Fragment key={index}>
-                                {/* Circle */}
-                                <Circle
-                                    cx={xScale(index)} // Use index to position the circle
-                                    cy={yScale(point.weight)}
-                                    r={5}
-                                    fill="#FF5555"
-                                />
-                                {/* Label */}
-                                <SvgText
-                                    x={xScale(index)} // Use index to position the label
-                                    y={yScale(point.weight) - 15} // Slightly above the circle
-                                    fontSize={10}
-                                    fill="#C0C0C0"
-                                    textAnchor="middle"
-                                >
-                                    {point.alt}
-                                </SvgText>
-                            </React.Fragment>
-                        ))}
-                    </Svg>
-                </View>
+      Alert.alert(
+        "Xác nhận",
+        "Bạn có chắc chắn muốn tiếp tục với các thông tin này không?",
+        [
+          {
+            text: "Hủy",
+            style: "cancel"
+          },
+          {
+            text: "Xác nhận",
+            onPress: () => navigation.navigate('Home')
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error saving record:', error);
+      alert('Có lỗi xảy ra, vui lòng thử lại sau!');
+    }
+  };
 
-                {/* Weight Details */}
-                <View className="flex-row justify-between mb-4">
+  const handleBack = () => {
+    navigation.goBack(); // Navigate back to the previous screen
+  };
+
+  return (
+    <ImageBackground
+      source={require('../../assets/images/bg-all.jpg')} // Background image
+      className="flex-1"
+      resizeMode="cover"
+    >
+      <SafeAreaView className="flex-1 p-5 bg-[#1a202c]">
+        <Text className="text-2xl text-yellow-300 font-bold text-center mb-5">
+          Thông tin tóm tắt
+        </Text>
+
+        {/* Weight Chart */}
+        <Text className="text-lg font-bold text-yellow-300 px-5">Mục tiêu:</Text>
+        <View className="items-center bg-neutral-900 rounded-lg m-5">
+          <Svg height="200" width="300">
+            {/* Line Path */}
+            <Path
+              d={lineGenerator(data)}
+              fill="none"
+              stroke="#00FFAA"
+              strokeWidth={5}
+            />
+            {/* Circles and Labels on Data Points */}
+            {data.map((point, index) => (
+              <React.Fragment key={index}>
+                <Circle cx={xScale(index)} cy={yScale(point.weight)} r={5} fill="#FF5555" />
+                <SvgText
+                  x={xScale(index)}
+                  y={yScale(point.weight) - 15}
+                  fontSize={10}
+                  fill="#C0C0C0"
+                  textAnchor="middle"
+                >
+                  {point.date}
+                </SvgText>
+              </React.Fragment>
+            ))}
+          </Svg>
+        </View>
+        <View className="flex-row justify-between mb-4 px-8">
                     {data.map((item, index) => (
                         <View key={index} className="items-center">
                             <Text className="text-white text-sm">{item.alt.toUpperCase()}</Text>
                             <Text className="text-red-400 text-base font-bold">{`${item.weight} Kg`}</Text>
                         </View>
                     ))}
-                </View>
-
-                {/* Entries List */}
-                <View className="mt-4 flex-1">
-                    <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-white text-base font-bold">Entries</Text>
-                        <TouchableOpacity className="p-2 rounded-lg bg-neutral-700">
-                            <Text className="text-teal-400 text-sm">+Create Collage</Text>
-                        </TouchableOpacity>
                     </View>
-                    <FlatList
-                        data={data.map((item, index) => ({
-                            id: index.toString(),
-                            weight: `${item.weight} Kg`,
-                            alt: item.alt,
-                            image: 'https://via.placeholder.com/50', // Replace with actual image
-                        }))}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <View className="flex-row items-center mb-4">
-                                <Image
-                                    source={{ uri: item.image }}
-                                    className="w-12 h-12 rounded-lg mr-4"
-                                />
-                                <View>
-                                    <Text className="text-white text-base font-bold">
-                                        {item.weight}
-                                    </Text>
-                                    <Text className="text-gray-400 text-sm">{item.alt}</Text>
-                                </View>
-                            </View>
-                        )}
-                    />
-                </View>
+        <ScrollView className="px-3">
+
+          {/* Record Summary */}
+          {[
+            { label: 'Giới tính', value: record.gender || 'Chưa cập nhật', icon: 'person' }, // Ionicons 'person' for gender
+            { label: 'Mức độ vận động', value: record.activity_level || 'Chưa cập nhật', icon: 'fitness' }, // Ionicons 'fitness' for activity level
+            { label: 'Tuổi', value: record.age || 'Chưa cập nhật', icon: 'calendar' }, // Ionicons 'md-cake' for age
+            { label: 'Chiều cao', value: `${record.height || 'Chưa cập nhật'} cm`, icon: 'arrow-up-circle' }, // Ionicons 'arrow-up-circle' for height
+            { label: 'Cân nặng', value: `${record.weight || 'Chưa cập nhật'} kg`, icon: 'scale' }, // Ionicons 'scale' for weight
+          ].map((item, index) => (
+            <View key={index} className="bg-white/20 p-5 rounded-2xl mb-3 flex-row">
+            <View className="p-2">
+              <Icon name={item.icon} size={30} color="#FF5555"  />
+              </View>
+              <View>
+                <Text className="text-lg font-bold text-yellow-300 mb-2 flex-row items-center">
+                  {item.label}:
+                </Text>
+                <Text className="text-white">{item.value}</Text>
+              </View>
             </View>
-        </SafeAreaView>
-    );
+          ))}
+
+        </ScrollView>
+
+        {/* Action Buttons */}
+        <View className="flex-row justify-between mt-5 px-5">
+          <TouchableOpacity
+            onPress={handleBack}
+            className="bg-yellow-400 p-2 rounded-tr-2xl rounded-bl-2xl border-[1px] border-white"
+          >
+            <Text className="font-bold text-center text-gray-700">Trở lại</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleConfirm}
+            className="bg-yellow-400 p-2 rounded-tr-2xl rounded-bl-2xl border-[1px] border-white"
+          >
+            <Text className="font-bold text-center text-gray-700">Xác nhận</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
+  );
 };
 
-export default TrackGoalScreen;
+export default SummaryScreen;

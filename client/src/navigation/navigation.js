@@ -11,6 +11,8 @@ import TabNavigator from './HomeRoutes/TabNavigator';
 import SummaryScreen from '../screens/GetInfo/SummaryScreen';
 import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
 import AddCaloScreen from '../screens/AddFood/AddCaloScreen';
+import CreatePostScreen from '../screens/Home/Blog/CreatePostScreen';
+import NewScreen from '../screens/Home/Blog/NewScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -19,6 +21,7 @@ const AppNavigator = () => {
     <Stack.Navigator initialRouteName="Welcome"
     screenOptions={{
       headerShown: false,
+      // gestureEnabled: false,
     }}
     >
         <Stack.Screen name="Home" component={TabNavigator} />
@@ -31,8 +34,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Summary" component={SummaryScreen} />
         <Stack.Screen name="TrackGoal" component={TrackGoalScreen} />
         <Stack.Screen name="AddCalo" component={AddCaloScreen} />
+        <Stack.Screen name="CreatePost" component={CreatePostScreen} />
 
-
+        <Stack.Screen name="News" component={NewScreen} />
     </Stack.Navigator>
   </NavigationContainer>
   );

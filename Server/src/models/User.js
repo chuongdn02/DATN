@@ -18,15 +18,19 @@ const healthSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    activityLevel: {
+    activity_level: {
         type: String,
         required: true,
-        enum: ['sedentary', 'lightly_active', 'moderately_active', 'very_active', 'super_active']
+        enum: ['low', 'light', 'moderate', 'very-active']
     },
     goal: {
         type: String,
         required: true,
         enum: ['lose', 'gain', 'maintain']
+    },
+    time: {
+        type: Date,
+        default: Date.now 
     }
 });
 
@@ -52,7 +56,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    health: healthSchema 
+    isChecked: {
+        type: Boolean,
+        default: false
+    },
+    records: [healthSchema]  // Chỉnh sửa ở đây, thay "record" thành "records"
 });
 
 const User = mongoose.model('User', userSchema);

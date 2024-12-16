@@ -6,8 +6,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import ProfileScreen from '../../screens/Home/ProfileScreen';
 import HomeScreen from '../../screens/Home/HomeScreen';
 import SettingsScreen from '../../screens/Home/SettingsScreen';
-import BlogScreen from '../../screens/Home/BlogScreen';
-import NotificationScreen from '../../screens/Home/NotificationScreen';
+import BlogScreen from '../../screens/Home/Blog/BlogScreen';
+import NotificationScreen from '../../screens/Home/Noti/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
 

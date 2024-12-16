@@ -9,7 +9,7 @@ const DailyStats = ({ stats, data }) => (
           {stats[key]}/{data[key]}
         </Text>
         <Text className="text-gray-400 text-sm">{key.charAt(0).toUpperCase() + key.slice(1)} (g)</Text>
-        <View className="w-full h-2 bg-gray-700 rounded-full mt-2">
+        <View className="w-14 h-2 bg-gray-700 rounded-full mt-2">
           <View
             className="h-2 rounded-full"
             style={{

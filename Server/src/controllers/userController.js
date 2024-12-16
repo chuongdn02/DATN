@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer');
 const User = require('../models/User');
 require('dotenv').config();
 
-const generateToken = (userId, name) => {
-  return jwt.sign({ userId, name }, process.env.JWT_SECRET, { expiresIn: '1h' });
+const generateToken = (userId, name, isChecked) => {
+  return jwt.sign({ userId, name, isChecked }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 const sendVerificationEmail = async (email, userId) => {
   try {
@@ -109,7 +109,7 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ msg: 'Please verify your email address before logging in' });
     }
 
-    const token = generateToken(user._id, user.name);
+    const token = generateToken(user._id, user.name, user.isChecked);
     return res.json({ token });
   } catch (err) {
     console.error('Server error:', err.message);
@@ -138,4 +138,26 @@ exports.verifyToken = async (req, res) => {
   }
 };
 
+exports.addRecord = async (req, res) => {
+  try {
+      const { userId } = req.params;
 
+      const { gender, activity_level, age, height, weight, goal } = req.body;
+
+      if (!gender || !activity_level || !age || !height || !weight || !goal) {
+          return res.status(400).json({ message: 'All fields are required' });
+      }
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'please login again'});
+      }
+      user.records.push({ gender, weight, height, age, activity_level, goal });
+      user.isChecked = true;
+      await user.save();
+
+      res.status(200).json({ message: 'Health record added successfully', user });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
