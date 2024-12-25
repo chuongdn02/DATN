@@ -1,6 +1,5 @@
-// src/actions/authActions.js
-import { LOGIN_SUCCESS, LOGIN_FAILURE, REGISTER_SUCCESS, REGISTER_FAILURE, LOGOUT } from './types';
-import { login, register } from '../../services/authService';
+import { LOGIN_SUCCESS, LOGIN_FAILURE, REGISTER_SUCCESS, REGISTER_FAILURE, LOGOUT, GET_RECORDS_SUCCESS, GET_RECORDS_FAILURE } from './types';
+import { login, register, getAllRecords } from '../../services/authService';
 import jwtDecode from 'jwt-decode';
 const handleError = (error) => {
     return error.response ? error.response.data.msg : error.message;
@@ -31,7 +30,7 @@ export const loginUser = (email, password) => async (dispatch) => {
 
 export const registerUser = (name, email, password) => async (dispatch) => {
     try {
-        const response = await register(name, email, password); // Gửi yêu cầu đăng ký
+        const response = await register(name, email, password);
         if (response) {
             dispatch({ type: REGISTER_SUCCESS, payload: response });
             return { type: REGISTER_SUCCESS, payload: response };
@@ -46,3 +45,13 @@ export const registerUser = (name, email, password) => async (dispatch) => {
 export const logoutUser = () => (dispatch) => {
     dispatch({ type: LOGOUT });
 };
+
+export const fetchUserRecords = (userId) => async (dispatch) => {
+    try {
+      const records = await getAllRecords(userId);
+      dispatch({ type: GET_RECORDS_SUCCESS, payload: records }); // Dispatch success action
+    } catch (error) {
+      const errorMessage = handleError(error);
+      dispatch({ type: GET_RECORDS_FAILURE, payload: errorMessage }); // Dispatch error action
+    }
+  };

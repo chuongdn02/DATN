@@ -5,7 +5,7 @@ const Category = ({navigation}) => (
     <View className="flex-row flex-wrap justify-between">
     {/* Menu Suggestion */}
     <TouchableOpacity
-      onPress={() => console.log('Menu Suggestion clicked')}
+       onPress={() => navigation.navigate('test')}
       className="bg-green-400/80 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
     >
       <View>
@@ -19,7 +19,7 @@ const Category = ({navigation}) => (
 
     {/* Add Calories */}
     <TouchableOpacity
-      onPress={() => navigation.navigate('AddCalo')}
+     onPress={() => navigation.navigate('AddCalo')}
       className="bg-yellow-400/80 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
     >
       <View>

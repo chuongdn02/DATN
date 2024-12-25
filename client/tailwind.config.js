@@ -18,6 +18,9 @@ module.exports = {
         success: '#28A745',  // Màu thành công (xanh lá)
 
       },
+      boxShadow: {
+        custom: '0 4px 6px rgba(255, 255, 255, 0.5)',
+      },
     },
   },
   plugins: [],

@@ -21,12 +21,21 @@ const healthSchema = new mongoose.Schema({
     activity_level: {
         type: String,
         required: true,
-        enum: ['low', 'light', 'moderate', 'very-active']
+        enum: ['low', 'light', 'moderate', 'very_active']
     },
     goal: {
         type: String,
         required: true,
         enum: ['lose', 'gain', 'maintain']
+    },
+    goal_weight: {
+        type: Number,
+        required: true
+    },
+    intensity: {
+        type: String,
+        required: true,
+        enum: ['low', 'medium', 'high']
     },
     time: {
         type: Date,

@@ -1,102 +1,218 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { launchCamera } from 'react-native-image-picker';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { ProgressBar, Colors } from 'react-native-paper';
+import DateSelector from '../Home/Components/DateSelector';
+import { useSelector } from 'react-redux';
+import moment from 'moment';
+import MealCard from './component/MealCard';
+import Dishes from './component/Dishes';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const AddCaloScreen = ({ navigation }) => {
-  const [selectedTab, setSelectedTab] = useState('All');
+const AddCalo = ({ navigation }) => {
+  const kcal = useSelector((state) => state.record.data.calories);
+  const progress = 200 / kcal;
 
-  // Hàm mở camera
-  const openCamera = () => {
-    const options = {
-      mediaType: 'photo',
-      cameraType: 'back',
-      saveToPhotos: true,
-    };
-
-    launchCamera(options, (response) => {
-      if (response.didCancel) {
-        Alert.alert('Camera', 'User cancelled camera');
-      } else if (response.errorCode) {
-        Alert.alert('Camera Error', response.errorMessage);
-      } else {
-        Alert.alert('Photo Captured', 'Your photo has been taken successfully!');
-        console.log(response.assets[0]); // Xử lý ảnh tại đây
-      }
-    });
+  const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
   };
 
+  const currentDate = moment(selectedDate);
+  const weekDays = Array.from({ length: 7 }).map((_, i) =>
+    currentDate.clone().startOf('week').add(i, 'days')
+  );
+  // Dishes Data
+  const dishes = [
+    {
+      id: 1,
+      name: 'Trứng chiên',
+      iconName: 'egg',
+      calories: 100,
+      fat: 7,
+      protein: 6,
+      carb: 1,
+      date: "2024-12-23",
+      ration: 'silce',
+      type: 'Breakfast',
+      quantity: 1
+    },
+    {
+      id: 2,
+      name: 'Bánh mì',
+      iconName: 'bread-slice',
+      calories: 250,
+      fat: 2,
+      protein: 9,
+      carb: 45,
+      date: "2024-12-22",
+      ration: 'silce',
+      type: 'Breakfast',
+      quantity: 1
+    },
+    {
+      id: 3,
+      name: 'Cơm gà',
+      iconName: 'rice',
+      calories: 600,
+      fat: 20,
+      protein: 40,
+      carb: 80,
+      date: "2024-12-24",
+      ration: 'dish',
+      type: 'Lunch',
+      quantity: 1
+    },
+    {
+      id: 4,
+      name: 'Salad trái cây',
+      iconName: 'fruit-grapes-outline',
+      calories: 150,
+      fat: 1,
+      protein: 2,
+      carb: 30,
+      date: "2024-12-22",
+      ration: 'dish',
+      type: 'Lunch',
+      quantity: 1
+    },
+    {
+      id: 5,
+      name: 'Sữa chua',
+      iconName: 'cup-outline',
+      calories: 90,
+      fat: 3,
+      protein: 5,
+      carb: 10,
+      date: "2024-12-25",
+      ration: 'box',
+      type: 'Snack',
+      quantity: 1
+    },
+    {
+      id: 6,
+      name: 'Cá hồi nướng',
+      iconName: 'fish',
+      calories: 400,
+      fat: 20,
+      protein: 50,
+      carb: 0,
+      date: "2024-12-22",
+      ration: 'slice',
+      type: 'Dinner',
+      quantity: 1
+    },
+  ];
+
+  // Filter dishes by ration (Breakfast, Lunch, Snack, Dinner)
+  const breakfastDishes = dishes.filter((dish) => dish.type === 'Breakfast' && dish.date === selectedDate);
+  const lunchDishes = dishes.filter((dish) => dish.type === 'Lunch' && dish.date === selectedDate);
+  const snackDishes = dishes.filter((dish) => dish.type === 'Snack' && dish.date === selectedDate);
+  const dinnerDishes = dishes.filter((dish) => dish.type === 'Dinner' && dish.date === selectedDate);
+
+
   return (
-    <View style={styles.container}>
-      {/* Thanh tiêu đề */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>{'<'} Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Breakfast</Text>
-      </View>
+    <View className="flex-1 bg-[#1a202c] px-4 py-6">
+      <SafeAreaView>
+        <Text className="text-white text-xl font-bold mb-6">Nhật ký</Text>
+      </SafeAreaView>
 
-      {/* Thanh tìm kiếm */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search food"
-          placeholderTextColor="#A0AEC0"
-          style={styles.searchInput}
-        />
-        <TouchableOpacity onPress={openCamera}>
-          <Text style={styles.barcodeIcon}>📷</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Horizontal Date Selector */}
+      <DateSelector
+        weekDays={weekDays}
+        selectedDate={selectedDate}
+        handleDateSelect={handleDateSelect}
+      />
 
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        {['All', 'My Foods', 'Meals'].map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tabButton, selectedTab === tab && styles.activeTab]}
-            onPress={() => setSelectedTab(tab)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                selectedTab === tab && styles.activeTabText,
-              ]}
-            >
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Nội dung hiển thị */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.emptyText}>
-          {selectedTab === 'All' ? 'No food found!' : `No items in ${selectedTab}`}
+      {/* Calories Section */}
+      <View className="mb-6">
+        <Text className="text-gray-400 text-center text-sm">
+          {currentDate.format('dddd, DD MMMM YYYY')}
         </Text>
-      </ScrollView>
+        <View className="flex-row justify-between">
+          <Text className="text-green-400 text-sm">BUDGET</Text>
+          <Text className="text-white text-sm">{kcal}</Text>
+        </View>
+        <ProgressBar
+          progress={progress}
+          color="#388E3C"
+          className="my-2 h-3 rounded-lg border-[2px] border-white"
+        />
+<View>
+  {/* First Row */}
+  <View className="flex-row justify-between items-center mb-2">
+    <View className="flex-row items-center space-x-2">
+      <Icon name="food-drumstick" size={20} color="blue" />
+      <Text className="text-blue-400 text-sm">Thức ăn</Text>
+      <Text className="text-white text-sm">2000</Text>
+    </View>
+    <View className="flex-row items-center space-x-2">
+      <Icon name="dumbbell" size={20} color="yellow" />
+      <Text className="text-yellow-400 text-sm">Tập luyện</Text>
+      <Text className="text-white text-sm">200</Text>
+    </View>
+  </View>
 
-      {/* Nút hành động */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.createButton}>
-          <Text style={styles.buttonText}>Create a Food</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.quickAddButton}>
-          <Text style={styles.buttonText}>Quick Add</Text>
-        </TouchableOpacity>
+  {/* Second Row */}
+  <View className="flex-row justify-between items-center">
+    <View className="flex-row items-center space-x-2">
+      <Icon name="check-circle-outline" size={20} color="green" />
+      <Text className="text-green-400 text-sm">Đã thực hiện</Text>
+      <Text className="text-white text-sm">200</Text>
+    </View>
+    <View className="flex-row items-center space-x-2">
+      <Icon name="timer-outline" size={20} color="red" />
+      <Text className="text-red-400 text-sm">Còn lại</Text>
+      <Text className="text-white text-sm">1718</Text>
+    </View>
+  </View>
+</View>
+
+
       </View>
+
+      {/* Meal Cards */}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <MealCard
+          iconName="bread-slice" // Toast icon for breakfast
+          mealName="Bữa Sáng"
+          onPress={() => navigation.navigate('AddFood', { value: 'Breakfast' })}
+        />
+        <Dishes
+          typeDishes={breakfastDishes}
+        />
+        <MealCard
+          iconName="food-drumstick" // Drumstick icon for lunch
+          mealName="Bữa Trưa"
+          onPress={() => navigation.navigate('AddFood', { value: 'Lunch' })}
+
+        />
+        <Dishes
+          typeDishes={lunchDishes}
+        />
+        <MealCard
+          iconName="food-apple" // Apple icon for snack
+          mealName="Bữa Phụ"
+          onPress={() => navigation.navigate('AddFood', { value: 'Snack' })}
+        />
+        <Dishes
+          typeDishes={snackDishes}
+        />
+        <MealCard
+          iconName="silverware-fork-knife" // Fork and knife icon for dinner
+          mealName="Bữa Tối"
+          onPress={() => navigation.navigate('AddFood', { value: 'Dinner' })}
+        />
+        <Dishes
+          typeDishes={dinnerDishes}
+        />
+        <MealCard
+          iconName="dumbbell" // Dumbbell icon for workout
+          mealName="Tập Luyện"
+          onPress={() => console.log('Workout')}
+        />
+      </ScrollView>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  // Các style như bạn đã định nghĩa
-});
-
-export default AddCaloScreen;
+export default AddCalo;

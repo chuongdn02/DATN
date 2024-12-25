@@ -3,7 +3,7 @@ import groq from '../config/groqConfig.js';  // Ensure correct path and file ext
 
 
 export const getChatCompletion = async (req, res) => {
-  const { message } = req.body; // Change this to req.query to handle query parameters
+  const { message } = req.body; 
 
   if (!message) {
     return res.status(400).json({ error: "Message is required." });

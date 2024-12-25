@@ -86,7 +86,6 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body)
 
   if (!email || !password) {
     return res.status(400).json({ msg: 'Please provide both email/phone and password' });
@@ -142,16 +141,17 @@ exports.addRecord = async (req, res) => {
   try {
       const { userId } = req.params;
 
-      const { gender, activity_level, age, height, weight, goal } = req.body;
+      const { gender, activity_level, age, height, weight, goal, goal_weight,intensity } = req.body;
+      console.log(req.body)
 
-      if (!gender || !activity_level || !age || !height || !weight || !goal) {
+      if (!gender || !activity_level || !age || !height || !weight || !goal || !goal_weight) {
           return res.status(400).json({ message: 'All fields are required' });
       }
       const user = await User.findById(userId);
       if (!user) {
           return res.status(404).json({ message: 'please login again'});
       }
-      user.records.push({ gender, weight, height, age, activity_level, goal });
+      user.records.push({ gender, weight, height, age, activity_level, goal, goal_weight, intensity });
       user.isChecked = true;
       await user.save();
 
@@ -159,5 +159,21 @@ exports.addRecord = async (req, res) => {
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getAllRecords = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ records: user.records });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

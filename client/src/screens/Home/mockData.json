@@ -1,0 +1,32 @@
+[
+  {
+    "date": "2024-12-22",
+    "calories": 1200,
+    "carbs": 50,
+    "protein": 80,
+    "fat": 60
+  },
+  {
+    "date": "2024-12-23",
+    "calories": 1500,
+    "carbs": 70,
+    "protein": 100,
+    "fat": 80
+  },
+
+  {
+    "date": "2024-12-24",
+    "calories": 1500,
+    "carbs": 70,
+    "protein": 100,
+    "fat": 80
+  },
+
+  {
+    "date": "2024-12-25",
+    "calories": 1500,
+    "carbs": 70,
+    "protein": 100,
+    "fat": 80
+  }
+]

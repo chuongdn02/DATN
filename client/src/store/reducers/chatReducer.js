@@ -13,7 +13,7 @@ const chatReducer = (state = initialState, action) => {
         ...state,
         messages: [
           ...state.messages,
-          { text: action.payload, sender: 'user' }, // Gửi tin nhắn của người dùng
+          { text: action.payload, sender: 'user' },
         ],
       };
     case RECEIVE_MESSAGE:
@@ -21,13 +21,13 @@ const chatReducer = (state = initialState, action) => {
         ...state,
         messages: [
           ...state.messages,
-          { text: action.payload, sender: 'system' }, // Gửi phản hồi từ hệ thống
+          { text: action.payload, sender: 'system' },
         ],
       };
     case SET_LOADING:
       return {
         ...state,
-        loading: action.payload, // Cập nhật trạng thái loading
+        loading: action.payload,
       };
     default:
       return state;

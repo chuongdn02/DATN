@@ -71,6 +71,7 @@ const GetGoalScreen = ({ navigation, route }) => {
         const updatedRecord = {
             ...record,
             goal,
+            intensity,
             goal_weight,
             time,
         };

@@ -13,18 +13,17 @@ const SummaryScreen = ({ navigation, route }) => {
   const goal_weight = Math.round(record.goal_weight);
   const time = Math.round(record.time);
   const today = new Date();
-
   const goalDate = new Date(today);
-goalDate.setDate(today.getDate() + time * 7);
+  goalDate.setDate(today.getDate() + time * 7);
 
   const formattedToday = today.toLocaleDateString(); // Format today's date for display
-const formattedGoalDate = goalDate.toLocaleDateString();
+  const formattedGoalDate = goalDate.toLocaleDateString();
 
-const data = [
-  { weight: weight, alt: 'start', date: formattedToday },
-  { weight: weight, alt: 'current', date: formattedToday },
-  { weight: goal_weight, alt: 'goal', date: formattedGoalDate },
-];
+  const data = [
+    { weight: weight, alt: 'start', date: formattedToday },
+    { weight: weight, alt: 'current', date: formattedToday },
+    { weight: goal_weight, alt: 'goal', date: formattedGoalDate },
+  ];
 
   // Define scales for x and y axes
   const xScale = scaleLinear().domain([0, data.length - 1]).range([25, 275]);
@@ -40,40 +39,40 @@ const data = [
     .y((d) => yScale(d.weight))
     .curve(curveCardinal.tension(0.9));
 
-  const handleConfirm = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/auth/users/${userId}/record`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  const handleConfirm = () => {
+    Alert.alert(
+      "Xác nhận",
+      "Bạn có chắc chắn muốn tiếp tục với các thông tin này không?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel"
         },
-        body: JSON.stringify(record),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
-        return;
-      }
-
-      Alert.alert(
-        "Xác nhận",
-        "Bạn có chắc chắn muốn tiếp tục với các thông tin này không?",
-        [
-          {
-            text: "Hủy",
-            style: "cancel"
+        {
+          text: "Xác nhận",
+          onPress: async () => {
+            try {
+              const response = await fetch(`http://localhost:3000/auth/users/${userId}/record`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(record),
+              });
+              if (!response.ok) {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message}`);
+                return;
+              }
+              navigation.navigate('Home');
+            } catch (error) {
+              console.error('Error saving record:', error);
+              alert('Có lỗi xảy ra, vui lòng thử lại sau!');
+            }
           },
-          {
-            text: "Xác nhận",
-            onPress: () => navigation.navigate('Home')
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Error saving record:', error);
-      alert('Có lỗi xảy ra, vui lòng thử lại sau!');
-    }
+        },
+      ]
+    );
   };
 
   const handleBack = () => {
@@ -120,13 +119,13 @@ const data = [
           </Svg>
         </View>
         <View className="flex-row justify-between mb-4 px-8">
-                    {data.map((item, index) => (
-                        <View key={index} className="items-center">
-                            <Text className="text-white text-sm">{item.alt.toUpperCase()}</Text>
-                            <Text className="text-red-400 text-base font-bold">{`${item.weight} Kg`}</Text>
-                        </View>
-                    ))}
-                    </View>
+          {data.map((item, index) => (
+            <View key={index} className="items-center">
+              <Text className="text-white text-sm">{item.alt.toUpperCase()}</Text>
+              <Text className="text-red-400 text-base font-bold">{`${item.weight} Kg`}</Text>
+            </View>
+          ))}
+        </View>
         <ScrollView className="px-3">
 
           {/* Record Summary */}
@@ -138,8 +137,8 @@ const data = [
             { label: 'Cân nặng', value: `${record.weight || 'Chưa cập nhật'} kg`, icon: 'scale' }, // Ionicons 'scale' for weight
           ].map((item, index) => (
             <View key={index} className="bg-white/20 p-5 rounded-2xl mb-3 flex-row">
-            <View className="p-2">
-              <Icon name={item.icon} size={30} color="#FF5555"  />
+              <View className="p-2">
+                <Icon name={item.icon} size={30} color="#FF5555" />
               </View>
               <View>
                 <Text className="text-lg font-bold text-yellow-300 mb-2 flex-row items-center">

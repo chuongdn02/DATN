@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Animated, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
+import { fetchUserRecords } from '../../store/actions/authActions';
+import { calculateBMRAction } from '../../store/actions/recordAction';
+import { sendMessage } from '../../store/actions/chatActions';
 import DailyStats from './Components/DailyStats';
 import Category from './Components/Category';
+import DateSelector from './Components/DateSelector';
+
 
 const HomeScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState('');
@@ -12,69 +17,52 @@ const HomeScreen = ({ navigation }) => {
   const screenWidth = Dimensions.get('window').width;
   const translateX = useState(new Animated.Value(screenWidth))[0];
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
+  const messages = useSelector((state) => state.chat.messages);
+  const loading = useSelector((state) => state.chat.loading);
   const scrollViewRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Overview');
   const name = useSelector((state) => state.auth.user.user?.name || 'Guest');
-
+  const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.user.user.userId);
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
-
-  const mockData = useMemo(() => ({
-    "2024-12-01": { calories: 1200, carbs: 50, protein: 80, fat: 60 },
-    "2024-12-02": { calories: 1500, carbs: 70, protein: 100, fat: 80 },
-    "2024-12-03": { calories: 1800, carbs: 90, protein: 120, fat: 100 },
-    "2024-12-05": { calories: 800, carbs: 40, protein: 70, fat: 50 },
-    "2024-12-08": { calories: 1200, carbs: 50, protein: 80, fat: 60 },
-    "2024-12-09": { calories: 1500, carbs: 70, protein: 100, fat: 80 },
-    "2024-12-10": { calories: 1800, carbs: 90, protein: 120, fat: 100 },
-    "2024-12-14": { calories: 800, carbs: 40, protein: 70, fat: 50 },
-  }), []);
-
-  const data = { calories: 2000, carbs: 50, protein: 80, fat: 60 };
+  const data = useSelector((state) => state.record.data);
+  const mockData = useMemo(() => ([
+    { date: "2024-12-22", calories: 1200, carbs: 50, protein: 80, fat: 60 },
+    { date: "2024-12-24", calories: 1500, carbs: 70, protein: 100, fat: 80 },
+    { date: "2024-12-23", calories: 1800, carbs: 90, protein: 120, fat: 100 },
+    { date: "2024-12-25", calories: 800, carbs: 40, protein: 70, fat: 50 },
+    { date: "2024-12-26", calories: 1200, carbs: 50, protein: 80, fat: 60 },
+    { date: "2024-12-27", calories: 1500, carbs: 70, protein: 100, fat: 80 },
+    { date: "2024-12-28", calories: 1800, carbs: 90, protein: 120, fat: 100 },
+    { date: "2024-12-29", calories: 800, carbs: 40, protein: 70, fat: 50 },
+  ]), []);
 
 
-  const [dailyStats, setDailyStats] = useState(mockData[selectedDate] || { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+  const [dailyStats, setDailyStats] = useState(mockData.find(item => item.date === selectedDate) || { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+  useEffect(() => {
+    const selectedStats = mockData.find(item => item.date === selectedDate);
+    setDailyStats(selectedStats || { calories: 0, carbs: 0, protein: 0, fat: 0 });
+  }, [selectedDate, mockData]);
+  
   const handleDateSelect = (date) => {
     setSelectedDate(date);
   };
 
   useEffect(() => {
-    setDailyStats(mockData[selectedDate] || { calories: 0, carbs: 0, protein: 0, fat: 0 });
-  }, [selectedDate, mockData]);
+    if (userId) {
+      dispatch(fetchUserRecords(userId));
+      dispatch(calculateBMRAction(userId));
+    }
+  }, [dispatch, userId]);
 
-  const sendMessage = async () => {
+
+
+  const sendChatMessage = async () => {
     if (message.trim()) {
-      // Add the user's message to the chat
-      setMessages((prevMessages) => [...prevMessages, { text: message, sender: 'user' }]);
+      dispatch(sendMessage(message));
       setMessage('');
-      try {
-        const response = await fetch('http://localhost:3000/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message: message }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: data.content || 'No response received.', sender: 'system' },
-          ]);
-        } else {
-          console.error('Error:', response.statusText);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: 'Sorry, there was an error with the server.', sender: 'system' },
-          ]);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: 'Failed to connect to the server.', sender: 'system' },
-        ]);
-      }
     }
   };
 
@@ -145,31 +133,11 @@ const HomeScreen = ({ navigation }) => {
 
         <View className="flex-1 bg-gray-900 p-2 rounded-lg mb-2">
           <View className="flex-row justify-between mb-4">
-          <DailyStats stats={dailyStats} data={data} />
+            <DailyStats stats={dailyStats} data={data} />
           </View>
         </View>
         <View className="flex-1">
-          <View className="flex-row justify-between mb-2">
-            {weekDays.map((day, index) => (
-              <View key={index} className="items-center">
-                <Text className="text-gray-400 text-sm">{day.format('ddd').toUpperCase()}</Text>
-                <TouchableOpacity
-                  onPress={() => handleDateSelect(day.format('YYYY-MM-DD'))}
-                  className={`w-10 h-10 rounded-full items-center justify-center mt-2 ${selectedDate === day.format('YYYY-MM-DD') ? 'bg-green-500' : 'bg-transparent'
-                    }`}
-                >
-                  <Text
-                    className={`text-sm ${selectedDate === day.format('YYYY-MM-DD')
-                      ? 'text-white font-bold'
-                      : 'text-gray-400'
-                      }`}
-                  >
-                    {day.format('D')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+          <DateSelector weekDays={weekDays} selectedDate={selectedDate} handleDateSelect={handleDateSelect} />
           <Text className="text-gray-400 text-center text-sm">
             {currentDate.format('dddd, DD MMMM YYYY')}
           </Text>
@@ -201,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
       {activeTab === 'Overview' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text className="text-white text-lg font-bold my-2">Recently played</Text>
-          <Category navigation={navigation} />
+          <Category navigation={navigation}/>
 
           <Text className="text-white text-lg font-bold my-2">Your favorites</Text>
           <View className="flex-row justify-between mb-5">
@@ -328,7 +296,7 @@ const HomeScreen = ({ navigation }) => {
                 value={message}
                 onChangeText={setMessage}
               />
-              <TouchableOpacity onPress={sendMessage}>
+              <TouchableOpacity onPress={sendChatMessage}>
                 <Icon name="send-outline" size={24} color="#FFFFFF" />
               </TouchableOpacity>
             </View>

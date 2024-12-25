@@ -28,7 +28,7 @@ const GetActivityScreen = ({ route, navigation }) => {
         'Hầu hết thời gian đi bộ hoặc thực hiện các hoạt động thể chất (ví dụ: Hướng dẫn viên, người phục vụ).',
     },
     {
-      value: 'very-active',
+      value: 'very_active',
       img: require('../../assets/images/very-active.png'),
       label: 'Hoạt động rất nhiều',
       description:

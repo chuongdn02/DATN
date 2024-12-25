@@ -1,9 +1,10 @@
-import { LOGIN_SUCCESS, LOGIN_FAILURE, REGISTER_SUCCESS, REGISTER_FAILURE, LOGOUT } from '../actions/types';
+import { LOGIN_SUCCESS, LOGIN_FAILURE, REGISTER_SUCCESS, REGISTER_FAILURE, LOGOUT, GET_RECORDS_SUCCESS, GET_RECORDS_FAILURE} from '../actions/types';
 
 const initialState = {
   user: null,
   isAuthenticated: false,
   error: null,
+  records: [],
 };
 
 const authReducer = (state = initialState, action) => {
@@ -28,6 +29,18 @@ const authReducer = (state = initialState, action) => {
         ...state,
         user: null,
         isAuthenticated: false,
+        error: action.payload,
+      };
+      case GET_RECORDS_SUCCESS:
+      return {
+        ...state,
+        records: action.payload,
+        error: null,
+      };
+    case GET_RECORDS_FAILURE:
+      return {
+        ...state,
+        records: [],
         error: action.payload,
       };
     case LOGOUT:

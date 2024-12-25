@@ -13,6 +13,9 @@ import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
 import AddCaloScreen from '../screens/AddFood/AddCaloScreen';
 import CreatePostScreen from '../screens/Home/Blog/CreatePostScreen';
 import NewScreen from '../screens/Home/Blog/NewScreen';
+import AddFood from '../screens/AddFood/AddFood';
+import CreateFood from '../screens/AddFood/CreateFood';
+// import test from '../screens/Home/test';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -35,6 +38,8 @@ const AppNavigator = () => {
         <Stack.Screen name="TrackGoal" component={TrackGoalScreen} />
         <Stack.Screen name="AddCalo" component={AddCaloScreen} />
         <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+        <Stack.Screen name="AddFood" component={AddFood} />
+        <Stack.Screen name="CrFood" component={CreateFood} />
 
         <Stack.Screen name="News" component={NewScreen} />
     </Stack.Navigator>
