@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View, Text, TouchableOpacity, FlatList, Image, SafeAreaView,
 } from 'react-native';
@@ -6,10 +6,10 @@ import { useSelector } from 'react-redux';
 import { Svg, Path, Circle, Text as SvgText } from 'react-native-svg';
 import { scaleLinear } from 'd3-scale';
 import { line, curveCardinal } from 'd3-shape';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const TrackGoalScreen = ({ navigation }) => {
 
-    // const [records, setRecords] = useState([]);
     const [viewGoal, setViewGoal] = useState(false);
 
     const records = useSelector((state) => state.auth.records.records);
@@ -38,12 +38,6 @@ const TrackGoalScreen = ({ navigation }) => {
         });
     }
 
-    // useEffect(() => {
-    //     if (fetchedRecords?.length > 0) {
-    //         setRecords(fetchedRecords);
-    //     }
-    // }, [fetchedRecords]);
-
     const xScale = scaleLinear()
         .domain([0, (viewGoal ? enhancedRecords : records).length - 1])
         .range([28, 272]);
@@ -62,9 +56,12 @@ const TrackGoalScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView className="bg-[#1a202c] flex-1 px-4">
-            <View className="flex-row justify-center items-center">
-                <Text className="text-white items-center text-lg font-bold">Track Goal</Text>
-            </View>
+            <SafeAreaView className="flex-row items-center mb-4">
+                <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+                    <Icon name="chevron-left" size={30} color="white" />
+                </TouchableOpacity>
+                <Text className="text-xl font-bold text-white flex-1 right-6 text-center">Tiến trình & mục tiêu</Text>
+            </SafeAreaView>
             <Text className="text-green-400 text-xl font-bold my-4 text-center">
                 You are doing well!
             </Text>
@@ -83,8 +80,8 @@ const TrackGoalScreen = ({ navigation }) => {
                                 const startWeight = records[0].weight;
                                 const currentWeight = records[records.length - 1].weight;
                                 const weightChange = currentWeight - startWeight;
-                                if (weightChange < 0) return 'Lose Weight';
-                                if (weightChange > 0) return 'Gain Weight';
+                                if (weightChange < 0) {return 'Lose Weight';}
+                                if (weightChange > 0) {return 'Gain Weight';}
                                 return 'Maintain Weight';
                             }
                             return '';
@@ -142,7 +139,6 @@ const TrackGoalScreen = ({ navigation }) => {
                 </Svg>
             </View>
              <View className="flex-row px-8 justify-between mb-4">
-                {/* Display Start (Initial weight) */}
                 {records.length > 0 && (
                     <View className="items-center">
                         <Text className="text-white text-sm">Start</Text>
@@ -150,7 +146,6 @@ const TrackGoalScreen = ({ navigation }) => {
                     </View>
                 )}
 
-                {/* Display Goal weight */}
                 {records.length > 0 && (
                     <View className="items-center">
                         <Text className="text-white text-sm">Goal</Text>
@@ -189,4 +184,5 @@ const TrackGoalScreen = ({ navigation }) => {
         </SafeAreaView>
     );
 };
+
 export default TrackGoalScreen;

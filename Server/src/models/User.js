@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const healthSchema = new mongoose.Schema({
+const recordSchema = new mongoose.Schema({
     gender: {
         type: String,
         required: true,
@@ -42,7 +42,62 @@ const healthSchema = new mongoose.Schema({
         default: Date.now 
     }
 });
-
+const mealSchema = new mongoose.Schema({
+    Name: {
+        type: String,
+        required: true,
+    },
+    Calories: {
+        type: Number,
+        required: true
+    },
+    Protein: {
+        type: Number,
+    },
+    Carbs: {
+        type: Number,
+    },
+    Fats: {
+       type: Number,
+    },
+    type: {
+        type: String,
+    },
+    date: {
+        type: Date,
+    },
+    ration:{
+        type: String,
+    },
+    quantity: {
+       type: Number,
+    }
+});
+const yourFoodSchema = new mongoose.Schema({
+    Name: {
+        type: String,
+        required: true,
+    },
+    Calories: {
+        type: Number,
+        required: true
+    },
+    Protein: {
+        type: Number,
+    },
+    Carbs: {
+        type: Number,
+    },
+    Fats: {
+       type: Number,
+    },
+    ration:{
+        type: String,
+    },
+    quantity: {
+       type: Number,
+    }
+});
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -69,7 +124,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    records: [healthSchema]  // Chỉnh sửa ở đây, thay "record" thành "records"
+    records: [recordSchema],
+    meals:[mealSchema],
+    yourFoods: [yourFoodSchema],
 });
 
 const User = mongoose.model('User', userSchema);

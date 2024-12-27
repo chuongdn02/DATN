@@ -1,19 +1,35 @@
-import { View, Text } from 'react-native';
 import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Dishes = ({typeDishes}) => {
+const Dishes = ({ typeDishes, onDeleteDish }) => {
   return (
-    <View className=" pb-4">
-    {typeDishes.map((dish) => (
-      <View key={dish.id} className="flex-row justify-between items-center bg-[#2c3e50] p-2 rounded-lg mb-2">
-        <View className="items-start">
-          <Text className="text-white ml-2">{dish.name}</Text>
-          <Text className="text-white ml-2">{dish.quantity} {dish.ration}</Text>
+    <View className="pb-4">
+      {typeDishes.map((dish) => (
+        <View
+          key={dish._id}
+          className="flex-row justify-between items-center bg-[#2c3e50] p-2 rounded-lg mb-2"
+        >
+          <View className="items-start">
+            <Text className="text-white w-60 font-bold">{dish.Name}</Text>
+            {dish.quantity && dish.ration && (
+              <Text className="text-white">
+                {dish.quantity} {dish.ration}
+              </Text>
+            )}
+          </View>
+          <View className="flex-row items-center">
+            <Text className="text-white font-bold mr-2">{dish.Calories} kcal</Text>
+            <TouchableOpacity
+              onPress={() => onDeleteDish(dish._id)}
+              className="p-2 bg-red-500 rounded-lg"
+            >
+              <Icon name="delete" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text className="text-white">{dish.calories} kcal</Text>
-      </View>
-    ))}
-  </View>
+      ))}
+    </View>
   );
 };
 

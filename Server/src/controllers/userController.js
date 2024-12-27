@@ -177,3 +177,171 @@ exports.getAllRecords = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+exports.getAllMeal = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+
+    res.status(200).json({ meals: user.meals });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.addMeal = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const { Name, Calories, Protein, Carbs, Fats, type, date , ration, quantity } = req.body;
+    console.log(req.body);
+
+    if (!Name || !Calories) {
+      return res.status(400).json({ message: 'Name and Calories are required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+    user.meals.push({ Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity});
+    await user.save();
+    res.status(200).json({ message: 'Meal added successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+exports.deleteMeal = async (req, res) => {
+  try {
+    const { userId, mealId } = req.params;
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+
+    // Find the meal and remove it from the meals array
+    const mealIndex = user.meals.findIndex(meal => meal._id.toString() === mealId);
+    if (mealIndex === -1) {
+      return res.status(404).json({ message: 'Meal not found' });
+    }
+
+    user.meals.splice(mealIndex, 1);
+    await user.save();
+
+    res.status(200).json({ message: 'Meal deleted successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.getYourFood = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+
+    res.status(200).json({ yourFoods: user.yourFoods });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.addYourFood = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const { Name, Calories, Protein, Carbs, Fats , ration, quantity } = req.body;
+    console.log(req.body);
+
+    if (!Name || !Calories) {
+      return res.status(400).json({ message: 'Name and Calories are required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+    user.yourFoods.push({ Name, Calories, Protein, Carbs, Fats, ration, quantity});
+    await user.save();
+    res.status(200).json({ message: 'Meal added successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.editYourFood = async (req, res) => {
+  try {
+    const { userId, foodId } = req.params;
+    const { Name, Calories, Protein, Carbs, Fats, ration, quantity } = req.body;
+
+    if (!Name || !Calories) {
+      return res.status(400).json({ message: 'Name and Calories are required' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+
+    const foodItem = user.yourFoods.id(foodId);
+    if (!foodItem) {
+      return res.status(404).json({ message: 'Food item not found.' });
+    }
+
+    foodItem.Name = Name;
+    foodItem.Calories = Calories;
+    foodItem.Protein = Protein;
+    foodItem.Carbs = Carbs;
+    foodItem.Fats = Fats;
+    foodItem.ration = ration;
+    foodItem.quantity = quantity;
+
+    await user.save();  
+
+    res.status(200).json({ message: 'Food item updated successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.deleteYourFood = async (req, res) => {
+  try {
+    const { userId, foodId } = req.params;
+    console.log(req.params)
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found. Please login again.' });
+    }
+
+    const foodItem = user.yourFoods.id(foodId);
+    if (!foodItem) {
+      return res.status(404).json({ message: 'Food item not found.' });
+    }
+
+    foodItem.remove();
+    await user.save();
+
+    res.status(200).json({ message: 'Food item deleted successfully', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

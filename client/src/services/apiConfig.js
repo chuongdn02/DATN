@@ -6,4 +6,6 @@ export const API_ENDPOINTS = {
   CHAT: '/api/chat',
   GET_ALL_RECORDS: '/auth/user/${userId}/records',
   BMR : '/api/calculate',
+  GET_ALL_FOOD:'/food',
+  ADD_MEAL: '/auth/users/${userId}/addMeal',
 };

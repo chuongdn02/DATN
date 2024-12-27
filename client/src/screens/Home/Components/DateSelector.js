@@ -1,28 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
+import 'moment/locale/vi';
+moment.locale('vi');
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const DateSelector = ({ selectedDate, handleDateSelect }) => {
-  // Get the current date and start of the week
   const currentDate = moment(selectedDate);
   const startOfWeek = currentDate.startOf('week');
   
-  // Get today's date for comparison
   const today = moment().format('YYYY-MM-DD'); 
 
-  // Create an array of week days from start of the week
   const weekDays = Array.from({ length: 7 }).map((_, i) =>
     startOfWeek.clone().add(i, 'days')
   );
 
   const handlePreviousWeek = () => {
-    // Move the date back by 1 week
     handleDateSelect(currentDate.clone().subtract(1, 'week').format('YYYY-MM-DD'));
   };
 
   const handleNextWeek = () => {
-    // Move the date forward by 1 week
     handleDateSelect(currentDate.clone().add(1, 'week').format('YYYY-MM-DD'));
   };
 

@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Import t
 const MealCard = ({ iconName, mealName, calories, onPress }) => {
   return (
     <View
-      className="bg-[#1c1c2c] rounded-lg p-5 my-3 flex-row justify-between items-center border-[1px] border-green-400"
+      className="bg-[#1c1c2c] rounded-lg p-3 my-3 flex-row justify-between items-center border-[1px] border-green-400"
     >
       <View className="flex-row items-center">
         <View className="w-10 h-10 justify-center items-center mr-4">
@@ -13,13 +13,13 @@ const MealCard = ({ iconName, mealName, calories, onPress }) => {
         </View>
         <View>
           <Text className="text-white text-xl font-bold">{mealName}</Text>
-          {calories && (
-            <Text className="text-[#cccccc] text-sm mt-1">{calories} kcal</Text>
-          )}
+          <Text className="text-[#cccccc] text-sm mt-1">
+            {calories ? calories : 0} kcal
+          </Text>
         </View>
       </View>
       <TouchableOpacity onPress={onPress} className="bg-green-400 rounded-l-lg w-16 h-10 left-5 justify-center items-center">
-      <Icon name="plus" size={30} color="white" />  
+        <Icon name="plus" size={30} color="white" />
       </TouchableOpacity>
     </View>
   );

@@ -12,22 +12,28 @@ import SummaryScreen from '../screens/GetInfo/SummaryScreen';
 import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
 import AddCaloScreen from '../screens/AddFood/AddCaloScreen';
 import CreatePostScreen from '../screens/Home/Blog/CreatePostScreen';
-import NewScreen from '../screens/Home/Blog/NewScreen';
+// import NewScreen from '../screens/Home/Blog/NewScreen';
 import AddFood from '../screens/AddFood/AddFood';
 import CreateFood from '../screens/AddFood/CreateFood';
-// import test from '../screens/Home/test';
+import QuickAdd from '../screens/AddFood/QuickAdd';
+import DetailAdd from '../screens/AddFood/DetailAdd';
+import DetailFood from '../screens/AddFood/DetailFood';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Welcome"
-    screenOptions={{
-      headerShown: false,
-      // gestureEnabled: false,
-    }}
-    >
-        <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Navigator
+        initialRouteName="Welcome"
+        screenOptions={{
+          headerShown: false,
+          animationEnabled: true, 
+          gestureEnabled: true,
+          animationTypeForReplace: 'push',
+        }}
+
+      >
+        <Stack.Screen name="Root" component={TabNavigator} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
@@ -40,10 +46,11 @@ const AppNavigator = () => {
         <Stack.Screen name="CreatePost" component={CreatePostScreen} />
         <Stack.Screen name="AddFood" component={AddFood} />
         <Stack.Screen name="CrFood" component={CreateFood} />
-
-        <Stack.Screen name="News" component={NewScreen} />
-    </Stack.Navigator>
-  </NavigationContainer>
+        <Stack.Screen name="QAdd" component={QuickAdd} />
+        <Stack.Screen name="DAdd" component={DetailAdd} />
+        <Stack.Screen name="DFood" component={DetailFood} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

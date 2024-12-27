@@ -7,6 +7,7 @@ const userRoutes = require('./src/routes/user');
 const healthRoutes = require('./src/routes/health');
 const chatbotRoutes = require('./src/routes/chatbotRoutes');
 const recordRoutes = require('./src/routes/record');
+const foodRoutes = require('./src/routes/food');
 
 // Load environment variables from .env file
 const mongoose = require('mongoose');
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 // Routes
 
 app.use('/auth', userRoutes);
+app.use('/food', foodRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api', chatbotRoutes);
 app.use('/api', recordRoutes);

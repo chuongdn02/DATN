@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, Image, Text, TextInput, ImageBackground } from 'react-native';
 import React,{ useState } from 'react';
-import { useDispatch ,useSelector} from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { loginUser } from '../../store/actions/authActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon } from 'react-native-heroicons/solid';
@@ -16,7 +16,7 @@ const LoginScreen = () => {
       .then((response) => {
         if (response.type === 'LOGIN_SUCCESS') {
           if(response.payload.user.isChecked === true){
-            navigation.navigate('Home');//Home
+            navigation.navigate('Root');//Home
           } else {
             // Navigate to the GetInfo screen if `isChecked` is false
             navigation.navigate('GetInfo');

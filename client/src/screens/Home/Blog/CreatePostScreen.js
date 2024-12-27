@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Button } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {  Text, TextInput, TouchableOpacity, Image, SafeAreaView, Button } from 'react-native';
+
 
 const CreatePostScreen = ({ navigation }) => {
   const [content, setContent] = useState('');

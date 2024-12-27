@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Animated, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { fetchUserRecords } from '../../store/actions/authActions';
+import { fetchUserRecords,getAllMeal } from '../../store/actions/authActions';
+import { AllFood } from '../../store/actions/foodAction';
 import { calculateBMRAction } from '../../store/actions/recordAction';
 import { sendMessage } from '../../store/actions/chatActions';
 import DailyStats from './Components/DailyStats';
@@ -18,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
   const translateX = useState(new Animated.Value(screenWidth))[0];
   const [message, setMessage] = useState('');
   const messages = useSelector((state) => state.chat.messages);
-  const loading = useSelector((state) => state.chat.loading);
+  // const loading = useSelector((state) => state.chat.loading);
   const scrollViewRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Overview');
   const name = useSelector((state) => state.auth.user.user?.name || 'Guest');
@@ -26,26 +27,39 @@ const HomeScreen = ({ navigation }) => {
   const userId = useSelector((state) => state.auth.user.user.userId);
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const data = useSelector((state) => state.record.data);
-  const mockData = useMemo(() => ([
-    { date: "2024-12-22", calories: 1200, carbs: 50, protein: 80, fat: 60 },
-    { date: "2024-12-24", calories: 1500, carbs: 70, protein: 100, fat: 80 },
-    { date: "2024-12-23", calories: 1800, carbs: 90, protein: 120, fat: 100 },
-    { date: "2024-12-25", calories: 800, carbs: 40, protein: 70, fat: 50 },
-    { date: "2024-12-26", calories: 1200, carbs: 50, protein: 80, fat: 60 },
-    { date: "2024-12-27", calories: 1500, carbs: 70, protein: 100, fat: 80 },
-    { date: "2024-12-28", calories: 1800, carbs: 90, protein: 120, fat: 100 },
-    { date: "2024-12-29", calories: 800, carbs: 40, protein: 70, fat: 50 },
-  ]), []);
-
-
-
-  const [dailyStats, setDailyStats] = useState(mockData.find(item => item.date === selectedDate) || { calories: 0, carbs: 0, protein: 0, fat: 0 });
-
-  useEffect(() => {
-    const selectedStats = mockData.find(item => item.date === selectedDate);
-    setDailyStats(selectedStats || { calories: 0, carbs: 0, protein: 0, fat: 0 });
-  }, [selectedDate, mockData]);
+  const dishes = useSelector((state) => state.auth.userMeals?.meals || []); // Default to an empty array if undefined
+  console.log(dishes);
   
+  const mockData = useMemo(() => {
+    if (!dishes || dishes.length === 0) return []; 
+    return dishes.map(dish => ({
+      date: moment(dish.date).format('YYYY-MM-DD'),
+      calories: dish.Calories,
+      carbs: dish.Carbs, 
+      protein: dish.Protein,
+      fat: dish.Fats,
+    }));
+  }, [dishes]);
+  
+  const calculateTotalStatsForDate = useCallback((date) => {
+    const selectedDishes = mockData.filter(dish => dish.date === date);
+  
+    const totalStats = selectedDishes.reduce((totals, dish) => {
+      totals.calories += dish.calories;
+      totals.carbs += dish.carbs || 0;
+      totals.protein += dish.protein || 0;
+      totals.fat += dish.fat || 0;
+      return totals;
+    }, { calories: 0, carbs: 0, protein: 0, fat: 0 });
+  
+    return totalStats;
+  }, [mockData]);
+  
+  const dailyStats = useMemo(() => {
+    return calculateTotalStatsForDate(selectedDate);
+  }, [selectedDate, calculateTotalStatsForDate]);
+  
+
   const handleDateSelect = (date) => {
     setSelectedDate(date);
   };
@@ -54,10 +68,10 @@ const HomeScreen = ({ navigation }) => {
     if (userId) {
       dispatch(fetchUserRecords(userId));
       dispatch(calculateBMRAction(userId));
+      dispatch(AllFood());
+      dispatch(getAllMeal(userId));
     }
   }, [dispatch, userId]);
-
-
 
   const sendChatMessage = async () => {
     if (message.trim()) {
@@ -72,7 +86,7 @@ const HomeScreen = ({ navigation }) => {
         scrollViewRef.current.scrollToEnd({ animated: true });
       }
     }, 50);
-    return () => clearTimeout(timeout); // Clear the timeout to prevent memory leaks
+    return () => clearTimeout(timeout);
   }, [isChatOpen, messages]);
 
   useEffect(() => {
@@ -109,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View className="flex-1 bg-[#1a202c] px-5 ">
       <View className="flex-col">
-        <SafeAreaView className="flex-row justify-between items-center">
+        <View className="flex-row justify-between items-center mt-14">
           <View>
             <Text className="text-white text-lg font-semibold ">Hello 👋</Text>
           </View>
@@ -124,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
+        </View>
 
         <View className="my-2">
           <Text className="font-bold text-white text-3xl">{greeting} 😊</Text>

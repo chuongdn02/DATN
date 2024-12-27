@@ -4,21 +4,20 @@ import { View, Text } from 'react-native';
 const DailyStats = ({ stats, data }) => {
   if (!stats || !data) return null;
 
-  // Lọc bỏ 'date' nếu nó có trong 'stats'
   const statsWithoutDate = { ...stats };
   delete statsWithoutDate.date;
 
   return (
-    <View className="flex-row justify-between">
+    <View className="flex-row justify-center items-center w-full">
       {Object.keys(statsWithoutDate).map((key) => (
-        <View key={key} className="flex-1 items-center mx-2">
-          <Text className="text-white text-base font-bold">
+        <View key={key} className="flex-1 items-center p-1">
+          <Text className="text-white text-base font-bold ">
             {statsWithoutDate[key]}/{data[key]}
           </Text>
           <Text className="text-gray-400 text-sm">{key.charAt(0).toUpperCase() + key.slice(1)} (g)</Text>
           <View className="w-14 h-2 bg-gray-700 rounded-full mt-2">
             <View
-              className="h-2 rounded-full"
+              className="h-2 rounded-full items-center"
               style={{
                 width: `${(statsWithoutDate[key] / data[key]) * 100}%`,
                 maxWidth: '100%',
