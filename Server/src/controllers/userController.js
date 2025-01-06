@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
 require('dotenv').config();
+const moment = require('moment');
 
 const generateToken = (userId, name, isChecked) => {
   return jwt.sign({ userId, name, isChecked }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -137,20 +138,54 @@ exports.verifyToken = async (req, res) => {
   }
 };
 
+// exports.addRecord = async (req, res) => {
+//   try {
+//       const { userId } = req.params;
+
+//       const { gender, activity_level, age, height, weight, goal, goal_weight,intensity } = req.body;
+//       console.log(req.body)
+
+//       if (!gender || !activity_level || !age || !height || !weight || !goal || !goal_weight) {
+//           return res.status(400).json({ message: 'All fields are required' });
+//       }
+//       const user = await User.findById(userId);
+//       if (!user) {
+//           return res.status(404).json({ message: 'please login again'});
+//       }
+//       user.records.push({ gender, weight, height, age, activity_level, goal, goal_weight, intensity });
+//       user.isChecked = true;
+//       await user.save();
+
+//       res.status(200).json({ message: 'Health record added successfully', user });
+//   } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// };
+
 exports.addRecord = async (req, res) => {
   try {
       const { userId } = req.params;
 
-      const { gender, activity_level, age, height, weight, goal, goal_weight,intensity } = req.body;
-      console.log(req.body)
+      const { gender, activity_level, age, height, weight, goal_weight, intensity } = req.body;
 
-      if (!gender || !activity_level || !age || !height || !weight || !goal || !goal_weight) {
+      if (!gender || !activity_level || !age || !height || !weight || !goal_weight) {
           return res.status(400).json({ message: 'All fields are required' });
       }
+      let goal = req.body.goal;
+      if (weight > goal_weight) {
+          goal = 'lose';
+      } else if (weight < goal_weight) {
+          goal = 'gain'; 
+      } else {
+          goal = 'maintain';
+      }
+
       const user = await User.findById(userId);
       if (!user) {
-          return res.status(404).json({ message: 'please login again'});
+          return res.status(404).json({ message: 'Please login again' });
       }
+
       user.records.push({ gender, weight, height, age, activity_level, goal, goal_weight, intensity });
       user.isChecked = true;
       await user.save();
@@ -197,21 +232,42 @@ exports.getAllMeal = async (req, res) => {
 exports.addMeal = async (req, res) => {
   try {
     const { userId } = req.params;
-
-    const { Name, Calories, Protein, Carbs, Fats, type, date , ration, quantity } = req.body;
-    console.log(req.body);
+    const { Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity } = req.body;
 
     if (!Name || !Calories) {
-      return res.status(400).json({ message: 'Name and Calories are required' });
+      return res.status(400).json({ message: 'Name, Calories, and Quantity are required' });
     }
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please login again.' });
     }
-    user.meals.push({ Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity});
+
+    // Skip existing check if the meal is "Món Nhanh"
+    if (Name !== 'Món Nhanh') {
+      const existingDishIndex = user.meals.findIndex(dish =>
+        dish.Name === Name &&
+        dish.type === type &&
+        moment(dish.date).format('YYYY-MM-DD') === date
+      );
+
+      if (existingDishIndex !== -1) {
+        // If the dish already exists, update it
+        user.meals[existingDishIndex].quantity += quantity;
+        user.meals[existingDishIndex].Calories += Calories * quantity;
+        user.meals[existingDishIndex].Protein += Protein * quantity;
+        user.meals[existingDishIndex].Carbs += Carbs * quantity;
+        user.meals[existingDishIndex].Fats += Fats * quantity;
+
+        await user.save();
+        return res.status(200).json({ message: 'Meal updated successfully', user });
+      }
+    }
+    
+    // If the dish does not exist or it's "Món Nhanh", add it
+    user.meals.push({ Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity });
     await user.save();
-    res.status(200).json({ message: 'Meal added successfully', user });
+    return res.status(200).json({ message: 'Meal added successfully', user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -219,17 +275,17 @@ exports.addMeal = async (req, res) => {
 };
 
 
+
+
 exports.deleteMeal = async (req, res) => {
   try {
     const { userId, mealId } = req.params;
 
-    // Find the user by userId
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please login again.' });
     }
 
-    // Find the meal and remove it from the meals array
     const mealIndex = user.meals.findIndex(meal => meal._id.toString() === mealId);
     if (mealIndex === -1) {
       return res.status(404).json({ message: 'Meal not found' });
@@ -278,7 +334,7 @@ exports.addYourFood = async (req, res) => {
     }
     user.yourFoods.push({ Name, Calories, Protein, Carbs, Fats, ration, quantity});
     await user.save();
-    res.status(200).json({ message: 'Meal added successfully', user });
+    res.status(200).json({ message: 'food added successfully', user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });

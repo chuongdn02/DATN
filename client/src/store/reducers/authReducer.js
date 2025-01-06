@@ -29,6 +29,7 @@ const initialState = {
   records: [],
   meals: [],
   foods: [],
+  userFoods: [],
   userMeals: [],
 };
 
@@ -39,7 +40,6 @@ const authReducer = (state = initialState, action) => {
         ...state,
         user: action.payload,
         isAuthenticated: true,
-        error: null,
       };
     case REGISTER_SUCCESS:
       return {
@@ -108,9 +108,10 @@ const authReducer = (state = initialState, action) => {
     case ADD_YOUR_FOOD_SUCCESS:
       return {
         ...state,
-        foods: [...state.foods, action.payload],
+        userFoods: [...state.userFoods, action.payload],
         error: null,
       };
+
     case ADD_YOUR_FOOD_FAILURE:
       return {
         ...state,
@@ -153,13 +154,13 @@ const authReducer = (state = initialState, action) => {
         error: action.payload,
       };
 
-    case LOGOUT:
-      return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
-        error: null,
-      };
+      case LOGOUT:
+        return {
+          ...state,
+          user: null,
+          isAuthenticated: false,
+          error: null,
+        };
 
 
     default:

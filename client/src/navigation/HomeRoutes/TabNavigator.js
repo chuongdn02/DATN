@@ -14,7 +14,7 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
     return (
         <Tab.Navigator
-        initialRouteName="Home"
+            initialRouteName="Home"
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused }) => {
                     let iconName;
@@ -44,7 +44,7 @@ const TabNavigator = () => {
                                     className="absolute  w-12 h-12 rounded-2xl "
                                 />
                             )}
-                            <Ionicons  name={iconName} size={25} color={focused ? '#1A2F55' : '#fff'} />
+                            <Ionicons name={iconName} size={25} color={focused ? '#1A2F55' : '#fff'} />
                         </View>
                     );
                 },
@@ -69,11 +69,12 @@ const TabNavigator = () => {
                 headerShown: false,
             })}
         >
-            <Tab.Screen name="Blog" component={BlogScreen} />
-            <Tab.Screen name="Notifications" component={NotificationScreen} />
+         <Tab.Screen name="Notifications" component={NotificationScreen} />
             <Tab.Screen name="Home" component={HomeScreen} />
+{/*            
+            <Tab.Screen name="Blog" component={BlogScreen} /> */}
             <Tab.Screen name="Profile" component={ProfileScreen} />
-            <Tab.Screen name="Setting" component={SettingsScreen} />
+            {/* <Tab.Screen name="Setting" component={SettingsScreen} /> */}
         </Tab.Navigator>
     );
 };

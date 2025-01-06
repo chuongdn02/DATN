@@ -8,6 +8,8 @@ const healthRoutes = require('./src/routes/health');
 const chatbotRoutes = require('./src/routes/chatbotRoutes');
 const recordRoutes = require('./src/routes/record');
 const foodRoutes = require('./src/routes/food');
+const exerciseRoutes = require('./src/routes/exercise');
+
 
 // Load environment variables from .env file
 const mongoose = require('mongoose');
@@ -30,6 +32,7 @@ app.use('/food', foodRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api', chatbotRoutes);
 app.use('/api', recordRoutes);
+app.use('/exercise', exerciseRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

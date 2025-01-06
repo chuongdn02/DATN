@@ -1,6 +1,5 @@
 const User = require('../models/User');
 require('dotenv').config();
-// Công thức Mifflin-St Jeor
 function calculateBMR(gender, weight, height, age) {
     if (gender === 'male') {
         return 10 * weight + 6.25 * height - 5 * age + 5;
@@ -10,7 +9,6 @@ function calculateBMR(gender, weight, height, age) {
     return 0;
 }
 
-// Tính toán lượng calo hàng ngày dựa trên mức độ hoạt động
 function calculateDailyCalories(bmr, activityLevel) {
     const activityFactors = {
         'sedentary': 1.2,
@@ -22,9 +20,8 @@ function calculateDailyCalories(bmr, activityLevel) {
     return bmr * (activityFactors[activityLevel] || 1.2);
 }
 
-// Tính toán lượng calo để tăng hoặc giảm cân
 function calculateCaloriesForGoal(dailyCalories, goal) {
-    const calorieDeficitOrSurplus = 500; // Khoảng 500 calo/ngày để giảm hoặc tăng 0.5 kg/tuần
+    const calorieDeficitOrSurplus = 500; 
     if (goal === 'lose') {
         return dailyCalories - calorieDeficitOrSurplus;
     } else if (goal === 'gain') {

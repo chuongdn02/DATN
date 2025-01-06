@@ -1,7 +1,7 @@
 import { View, Text, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { addMealToUser } from '../../store/actions/authActions';
+import { addMealToUser,getAllMeal } from '../../store/actions/authActions';
 import { useSelector, useDispatch } from 'react-redux';
 
 const QuickAdd = ({ route, navigation }) => {
@@ -23,7 +23,8 @@ const QuickAdd = ({ route, navigation }) => {
             .then((response) => {
                 if (response.type === 'ADD_MEAL_SUCCESS') {
                     alert('Món ăn đã được thêm.');
-                    navigation.navigate('AddCalo');
+                    dispatch(getAllMeal(userId));
+                    navigation.navigate('AddCalo',{date:date});
                 } else {
                     alert(response.payload);
                 }

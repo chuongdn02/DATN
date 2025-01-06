@@ -76,26 +76,25 @@ const GetInfoScreen = ({ navigation }) => {
           </View>
           <Text className="text-base text-white font-bold mb-2">Tuổi:</Text>
           <View className="rounded-full p-3 mb-8 h-10 justify-center bg-white/50">
-            <Picker
-              selectedValue={age}
-              onValueChange={(itemValue) => setAge(itemValue)}
-              style={{ color: 'white' }}
-              itemStyle={{ color: 'white' }} // Apply white color to all items
-            >
-              <Picker.Item
-                label="chọn tuổi của bạn"
-                value=""
-              />
-              {Array.from({ length: 100 }, (_, index) => (
-                <Picker.Item
-                  key={index}
-                  label={`${index + 1}`}
-                  value={`${index + 1}`}
-                />
-              ))}
-            </Picker>
-          </View>
-
+      <Picker
+        selectedValue={age}
+        onValueChange={(itemValue) => setAge(itemValue)}
+        style={{ color: 'white' }}
+        itemStyle={{ color: 'white' }}
+      >
+        <Picker.Item label="Chọn tuổi của bạn" value="" />
+        
+        {/* Age options from 16 to 65 */}
+        {Array.from({ length: 50 }, (_, index) => (
+          <Picker.Item
+            key={index}
+            label={`${index + 16}`}  // Display ages from 16 to 65
+            value={`${index + 16}`}  // Set age value
+          />
+        ))}
+        
+      </Picker>
+    </View>
           <Text className="text-base text-white font-bold mt-10 mb-2 ">Chiều cao (cm): {height} cm</Text>
           <View className="flex flex-row justify-center mb-8 items-center h-10 overflow-hidden bg-white/50 rounded-full">
             <RulerPicker

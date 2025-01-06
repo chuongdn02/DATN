@@ -10,14 +10,20 @@ import GetGoalScreen from '../screens/GetInfo/GetGoalScreen';
 import TabNavigator from './HomeRoutes/TabNavigator';
 import SummaryScreen from '../screens/GetInfo/SummaryScreen';
 import TrackGoalScreen from '../screens/Function/TrackGoalScreen';
+import SuggestScreen from '../screens/Home/SuggestScreen';
 import AddCaloScreen from '../screens/AddFood/AddCaloScreen';
 import CreatePostScreen from '../screens/Home/Blog/CreatePostScreen';
-// import NewScreen from '../screens/Home/Blog/NewScreen';
 import AddFood from '../screens/AddFood/AddFood';
 import CreateFood from '../screens/AddFood/CreateFood';
 import QuickAdd from '../screens/AddFood/QuickAdd';
 import DetailAdd from '../screens/AddFood/DetailAdd';
 import DetailFood from '../screens/AddFood/DetailFood';
+import All_Exercise from '../screens/Exercise/All_Exercise';
+import Cardio from '../screens/Exercise/Cardio';
+import Power from '../screens/Exercise/Power';
+import Routine from '../screens/Exercise/Routine';
+import ExerciseDetail from '../screens/Exercise/ExerciseDetail';
+import All_Add_Ex from '../screens/Exercise/All_Add_Ex';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -28,8 +34,8 @@ const AppNavigator = () => {
         screenOptions={{
           headerShown: false,
           animationEnabled: true, 
-          gestureEnabled: true,
-          animationTypeForReplace: 'push',
+          gestureEnabled: false,
+          // animationTypeForReplace: 'push',
         }}
 
       >
@@ -41,14 +47,22 @@ const AppNavigator = () => {
         <Stack.Screen name="GetActivity" component={GetActivityScreen} />
         <Stack.Screen name="GetGoal" component={GetGoalScreen} />
         <Stack.Screen name="Summary" component={SummaryScreen} />
+        <Stack.Screen name="Suggest" component={SuggestScreen} />
         <Stack.Screen name="TrackGoal" component={TrackGoalScreen} />
         <Stack.Screen name="AddCalo" component={AddCaloScreen} />
-        <Stack.Screen name="CreatePost" component={CreatePostScreen} />
         <Stack.Screen name="AddFood" component={AddFood} />
+        <Stack.Screen name="CreatePost" component={CreatePostScreen} />
         <Stack.Screen name="CrFood" component={CreateFood} />
         <Stack.Screen name="QAdd" component={QuickAdd} />
         <Stack.Screen name="DAdd" component={DetailAdd} />
         <Stack.Screen name="DFood" component={DetailFood} />
+        <Stack.Screen name="AllEx" component={All_Exercise} />
+        <Stack.Screen name="Cardio" component={Cardio} />
+        <Stack.Screen name="Power" component={Power} />
+        <Stack.Screen name="Routine" component={Routine} />
+        <Stack.Screen name="ExerciseDetail" component={ExerciseDetail} />
+        <Stack.Screen name="All_Ex" component={All_Add_Ex} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

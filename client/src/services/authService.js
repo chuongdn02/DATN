@@ -43,6 +43,8 @@ export const getAllRecords = async (userId) => {
   }
 };
 
+
+
 export const addMeal = async (userId, Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity) => {
   try {
     const response = await axios.post(`${API_URL}/auth/users/${userId}/addMeal`, { Name, Calories, Protein, Carbs, Fats, type, date, ration, quantity});
@@ -113,7 +115,6 @@ export const deleteYourFood = async (userId, foodId) => {
 export const deleteMeal = async (userId, mealId) => {
   try {
     const response = await axios.delete(`${API_URL}/auth/users/${userId}/meals/${mealId}`);
-    console.log("Delete response: ", response.data);  // Log the full response
     return response.data;
   } catch (error) {
     console.error('Error deleting food:', error.response || error);

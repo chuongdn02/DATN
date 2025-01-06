@@ -1,5 +1,5 @@
 const express = require('express');
-const { calculateKeto } = require('../controllers/HealthController');
+const { calculateKeto } = require('../controllers/healthController');
 
 const router = express.Router();
 

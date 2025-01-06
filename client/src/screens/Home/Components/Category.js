@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text,TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-const Category = ({navigation}) => (
+const Category = ({navigation,date}) => (
     <View className="flex-row flex-wrap justify-between">
     {/* Menu Suggestion */}
     <TouchableOpacity
-       onPress={() => navigation.navigate('test')}
+       onPress={() => navigation.navigate('Suggest')}
       className="bg-green-400/80 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
     >
       <View>
@@ -18,7 +18,7 @@ const Category = ({navigation}) => (
 
     {/* Add Calories */}
     <TouchableOpacity
-     onPress={() => navigation.navigate('AddCalo')}
+     onPress={() => navigation.navigate('AddCalo',{date:date})}
       className="bg-yellow-400/80 rounded-lg w-[48%] h-40 p-4 mb-5 flex flex-col justify-between"
     >
       <View>

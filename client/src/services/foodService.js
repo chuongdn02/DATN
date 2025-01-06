@@ -10,3 +10,15 @@ export const getAllFoods = async () => {
       throw error;
     }
   };
+
+  export const suggestFoods = async (criteria) => {
+    try {
+      const response = await axios.post(`${API_URL}${API_ENDPOINTS.SUGGEST_FOOD}`, criteria);
+      return response.data.meals;  // Lấy dữ liệu món ăn từ 'meals'
+    } catch (error) {
+      console.error('Error suggesting foods:', error);
+      throw error;
+    }
+  };
+  
+  

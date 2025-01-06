@@ -1,9 +1,10 @@
 // RenderScrollView.js
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const RenderScrollView = ({ navigation, selected, collapsedSections, foods, yourFoods, toggleCollapse, search, value, date }) => {
+
     const filteredFoods = foods.filter((food) => food.Name.toLowerCase().includes(search.toLowerCase()));
 
     const groupedFoods = filteredFoods.reduce((acc, food) => {
@@ -14,11 +15,13 @@ const RenderScrollView = ({ navigation, selected, collapsedSections, foods, your
         return acc;
     }, {});
 
-
     if (selected === 0) {
         return (
-            <ScrollView className="mt-4 pb-52">
-                {Object.keys(groupedFoods).map((type) => (
+            <FlatList
+            className="mt-5"
+                data={Object.keys(groupedFoods)} // List of food types
+                keyExtractor={(item) => item}
+                renderItem={({ item: type }) => (
                     <View key={type} className="mx-3 mb-4">
                         <TouchableOpacity
                             onPress={() => toggleCollapse(type)}
@@ -31,23 +34,28 @@ const RenderScrollView = ({ navigation, selected, collapsedSections, foods, your
                                 color="white"
                             />
                         </TouchableOpacity>
-                        {!collapsedSections[type] &&
-                            groupedFoods[type].map((food) => (
-                                <TouchableOpacity
-                                    key={food._id}
-                                    onPress={() => navigation.navigate('DFood', { food: food, value: value, date: date })}
-                                    className="p-3 bg-white rounded-lg shadow mt-2"
-                                >
-                                    <Text className="font-bold text-gray-900">{food.Name}</Text>
-                                    <Text className="text-gray-600">
-                                        Calories: {food.Calories} | Protein: {food.Protein}g |
-                                        Carbs: {food.Carbs}g | Fats: {food.Fats}g
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
+                        {!collapsedSections[type] && (
+                            <FlatList
+                                data={groupedFoods[type]}
+                                keyExtractor={(food) => food._id}
+                                renderItem={({ item: food }) => (
+                                    <TouchableOpacity
+                                        key={food._id}
+                                        onPress={() => navigation.navigate('DFood', { food: food, value: value, date: date })}
+                                        className="p-3 bg-white rounded-lg shadow mt-2"
+                                    >
+                                        <Text className="font-bold text-gray-900">{food.Name}</Text>
+                                        <Text className="text-gray-600">
+                                            Calories: {food.Calories} | Protein: {food.Protein}g |
+                                            Carbs: {food.Carbs}g | Fats: {food.Fats}g
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        )}
                     </View>
-                ))}
-            </ScrollView>
+                )}
+            />
         );
     }
 
@@ -57,31 +65,35 @@ const RenderScrollView = ({ navigation, selected, collapsedSections, foods, your
         );
 
         return (
-            <ScrollView className="mt-4 mx-4 pb-52">
-                {myFoods.map((food) => (
+            <FlatList
+                className="mt-4"
+                data={myFoods}
+                keyExtractor={(food) => food._id}
+                renderItem={({ item: food }) => (
                     <TouchableOpacity
                         key={food._id}
                         onPress={() => navigation.navigate('DFood', { food: food, value: value, date: date })}
-                        className="p-3 bg-white rounded-lg shadow mt-2"
+                        className="mx-4 p-3 bg-white rounded-lg shadow mt-2"
                     >
-                        
-                            <Text className="font-bold text-gray-900">{food.Name}</Text>
-                            <Text className="text-gray-600">
-                                Calories: {food.Calories} | Protein: {food.Protein}g |
-                                Carbs: {food.Carbs}g | Fats: {food.Fats}g
-                            </Text>
+                        <Text className="font-bold text-gray-900">{food.Name}</Text>
+                        <Text className="text-gray-600">
+                            Calories: {food.Calories} | Protein: {food.Protein}g |
+                            Carbs: {food.Carbs}g | Fats: {food.Fats}g
+                        </Text>
                     </TouchableOpacity>
-                ))}
-            </ScrollView>
+                )}
+            />
         );
     }
 
-
     if (selected === 2) {
         const myMenuFoods = filteredFoods.filter((food) => food.isInMyMenu);
+        
         return (
-            <ScrollView className="mt-4 pb-52">
-                {myMenuFoods.map((food) => (
+            <FlatList
+                data={myMenuFoods} // My menu foods filtered by search
+                keyExtractor={(food) => food._id}
+                renderItem={({ item: food }) => (
                     <View key={food._id} className="p-3 bg-white rounded-lg shadow mt-2">
                         <Text className="font-bold text-gray-900">{food.Name}</Text>
                         <Text className="text-gray-600">
@@ -89,8 +101,8 @@ const RenderScrollView = ({ navigation, selected, collapsedSections, foods, your
                             Carbs: {food.Carbs}g | Fats: {food.Fats}g
                         </Text>
                     </View>
-                ))}
-            </ScrollView>
+                )}
+            />
         );
     }
 

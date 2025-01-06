@@ -8,10 +8,10 @@ const Dishes = ({ typeDishes, onDeleteDish }) => {
       {typeDishes.map((dish) => (
         <View
           key={dish._id}
-          className="flex-row justify-between items-center bg-[#2c3e50] p-2 rounded-lg mb-2"
+          className="flex-row justify-between items-center bg-[#2c3e50] p-2 rounded-lg mb-2 w-full"
         >
           <View className="items-start">
-            <Text className="text-white w-60 font-bold">{dish.Name}</Text>
+            <Text className="text-white w-56 font-bold">{dish.Name}</Text>
             {dish.quantity && dish.ration && (
               <Text className="text-white">
                 {dish.quantity} {dish.ration}

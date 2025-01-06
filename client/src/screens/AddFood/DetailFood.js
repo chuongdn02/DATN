@@ -24,8 +24,7 @@ const DetailFood = ({ route, navigation }) => {
           .then((response) => {
             if (response.type === 'ADD_MEAL_SUCCESS') {
               alert('Món ăn đã được thêm.');
-              navigation.navigate('AddCalo');
-              // Gọi hành động getAllMeal sau khi thêm món ăn thành công
+              navigation.navigate('AddCalo',{date:date});
               dispatch(getAllMeal(userId));
             } else {
               alert(response.payload);

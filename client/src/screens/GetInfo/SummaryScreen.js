@@ -20,9 +20,9 @@ const SummaryScreen = ({ navigation, route }) => {
   const formattedGoalDate = goalDate.toLocaleDateString();
 
   const data = [
-    { weight: weight, alt: 'start', date: formattedToday },
-    { weight: weight, alt: 'current', date: formattedToday },
-    { weight: goal_weight, alt: 'goal', date: formattedGoalDate },
+    { weight: weight, alt: 'bắt đầu', date: formattedToday },
+    { weight: weight, alt: 'hiện tại', date: formattedToday },
+    { weight: goal_weight, alt: 'mục tiêu', date: formattedGoalDate },
   ];
 
   // Define scales for x and y axes
@@ -64,7 +64,7 @@ const SummaryScreen = ({ navigation, route }) => {
                 alert(`Error: ${errorData.message}`);
                 return;
               }
-              navigation.navigate('Home');
+              navigation.navigate('Root');
             } catch (error) {
               console.error('Error saving record:', error);
               alert('Có lỗi xảy ra, vui lòng thử lại sau!');
@@ -130,11 +130,40 @@ const SummaryScreen = ({ navigation, route }) => {
 
           {/* Record Summary */}
           {[
-            { label: 'Giới tính', value: record.gender || 'Chưa cập nhật', icon: 'person' }, // Ionicons 'person' for gender
-            { label: 'Mức độ vận động', value: record.activity_level || 'Chưa cập nhật', icon: 'fitness' }, // Ionicons 'fitness' for activity level
-            { label: 'Tuổi', value: record.age || 'Chưa cập nhật', icon: 'calendar' }, // Ionicons 'md-cake' for age
-            { label: 'Chiều cao', value: `${record.height || 'Chưa cập nhật'} cm`, icon: 'arrow-up-circle' }, // Ionicons 'arrow-up-circle' for height
-            { label: 'Cân nặng', value: `${record.weight || 'Chưa cập nhật'} kg`, icon: 'scale' }, // Ionicons 'scale' for weight
+            {
+              label: 'Giới tính',
+              value: record.gender
+                ? (record.gender === 'male' ? 'Nam' : 'Nữ')
+                : 'Chưa cập nhật',
+              icon: 'person'
+            },
+            {
+              label: 'Mức độ vận động',
+              value: record.activity_level
+                ? ({
+                  low: 'Thấp',
+                  light: 'Nhẹ',
+                  moderate: 'Vừa phải',
+                  very_active: 'Rất tích cực'
+                }[record.activity_level] || 'Chưa cập nhật')
+                : 'Chưa cập nhật',
+              icon: 'fitness'
+            },
+            {
+              label: 'Tuổi',
+              value: record.age || 'Chưa cập nhật',
+              icon: 'calendar'
+            },
+            {
+              label: 'Chiều cao',
+              value: `${record.height || 'Chưa cập nhật'} cm`,
+              icon: 'arrow-up-circle'
+            },
+            {
+              label: 'Cân nặng',
+              value: `${record.weight || 'Chưa cập nhật'} kg`,
+              icon: 'scale'
+            },
           ].map((item, index) => (
             <View key={index} className="bg-white/20 p-5 rounded-2xl mb-3 flex-row">
               <View className="p-2">
@@ -150,6 +179,7 @@ const SummaryScreen = ({ navigation, route }) => {
           ))}
 
         </ScrollView>
+
 
         {/* Action Buttons */}
         <View className="flex-row justify-between mt-5 px-5">

@@ -2,10 +2,10 @@ import { View, Text, SafeAreaView, TouchableOpacity, TextInput, Alert } from 're
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { addFoodToUser } from '../../store/actions/authActions';
+import { addFoodToUser, getAllFood } from '../../store/actions/authActions';
 
 const DetailAdd = ({ navigation, route }) => {
-    const { foodName, portion, quantity } = route.params;
+    const { foodName, portion, quantity,type,date } = route.params;
     const userId = useSelector((state) => state.auth.user.user.userId);
     
     // Set initial states for calories, protein, carbs, and fats
@@ -18,15 +18,15 @@ const DetailAdd = ({ navigation, route }) => {
 
     const handleAddFoodToUser = () => {
         if (!calories || !protein || !carbs || !fats) {
-            // Show an alert if any field is missing
             Alert.alert('Thông báo', 'Vui lòng điền đầy đủ thông tin');
         } else {
             dispatch(addFoodToUser(userId, foodName, calories, protein, carbs, fats, portion, quantity))
+
                 .then((response) => {
-                    console.log(response);
                     if (response.type === 'ADD_YOUR_FOOD_SUCCESS') {
                         alert('Món ăn đã được thêm.');
-                        navigation.navigate('AddCalo');
+                        dispatch(getAllFood(userId));
+                        navigation.navigate('AddFood',{ value: type, date: date});
                     } else {
                     
                         alert(response.payload);

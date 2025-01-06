@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
 const NotificationScreen = ({ navigation }) => {
   // Mock data for notifications
   const notifications = [

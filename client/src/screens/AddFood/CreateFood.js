@@ -2,21 +2,22 @@ import { View, Text, SafeAreaView, TouchableOpacity, TextInput, Alert } from 're
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const CreateFood = ({ navigation }) => {
+const CreateFood = ({ navigation,route }) => {
+    const { title, type, date } = route.params;
     const [foodName, setFoodName] = useState('');
     const [portion, setPortion] = useState('');
     const [quantity, setQuantity] = useState('1');
 
     const handleAddFood = () => {
-        // Validate if all fields are filled
         if (!foodName || !portion || !quantity) {
             Alert.alert('Thông báo', 'Vui lòng điền đầy đủ thông tin');
         } else {
-            // Pass the data to DAdd screen
             navigation.navigate('DAdd', {
                 foodName,
                 portion,
-                quantity
+                quantity,
+                type,
+                date
             });
         }
     };
@@ -27,7 +28,7 @@ const CreateFood = ({ navigation }) => {
                 <TouchableOpacity className="p-2" onPress={() => navigation.goBack()}>
                     <Icon name="chevron-left" size={30} color="white" />
                 </TouchableOpacity>
-                <Text className="text-xl font-bold text-white flex-1 right-6 text-center">Tạo món ăn</Text>
+                <Text className="text-xl font-bold text-white flex-1 right-6 text-center">{title}</Text>
             </SafeAreaView>
             <View className="flex ml-4">
                 <View className="flex-row shadow-custom bg-gray-900 p-5 rounded-l-[12px] my-2">

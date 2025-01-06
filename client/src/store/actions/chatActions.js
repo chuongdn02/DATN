@@ -6,7 +6,6 @@ export const sendMessage = (message) => async (dispatch) => {
 
   try {
     const response = await chat(message);
-    console.log(response);
     dispatch({
       type: SEND_MESSAGE,
       payload: message,

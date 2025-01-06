@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Animated, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { fetchUserRecords,getAllMeal } from '../../store/actions/authActions';
+import { fetchUserRecords, getAllMeal } from '../../store/actions/authActions';
 import { AllFood } from '../../store/actions/foodAction';
 import { calculateBMRAction } from '../../store/actions/recordAction';
 import { sendMessage } from '../../store/actions/chatActions';
@@ -19,46 +19,46 @@ const HomeScreen = ({ navigation }) => {
   const translateX = useState(new Animated.Value(screenWidth))[0];
   const [message, setMessage] = useState('');
   const messages = useSelector((state) => state.chat.messages);
-  // const loading = useSelector((state) => state.chat.loading);
   const scrollViewRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Overview');
-  const name = useSelector((state) => state.auth.user.user?.name || 'Guest');
+  const name = useSelector((state) => state.auth.user.user?.name);
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.user.user.userId);
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const data = useSelector((state) => state.record.data);
-  const dishes = useSelector((state) => state.auth.userMeals?.meals || []); // Default to an empty array if undefined
-  console.log(dishes);
-  
-  const mockData = useMemo(() => {
-    if (!dishes || dishes.length === 0) return []; 
-    return dishes.map(dish => ({
+
+  const dishes = useSelector((state) => state.auth.userMeals.meals);
+
+  const mockData = (!dishes || dishes.length === 0)
+    ? []
+    : dishes.map(dish => ({
       date: moment(dish.date).format('YYYY-MM-DD'),
-      calories: dish.Calories,
-      carbs: dish.Carbs, 
-      protein: dish.Protein,
-      fat: dish.Fats,
+      calories: dish.Calories || 0,
+      carbs: dish.Carbs || 0,
+      protein: dish.Protein || 0,
+      fat: dish.Fats || 0,
+      type: dish.type, // make sure to keep type in the object
     }));
-  }, [dishes]);
-  
-  const calculateTotalStatsForDate = useCallback((date) => {
-    const selectedDishes = mockData.filter(dish => dish.date === date);
-  
-    const totalStats = selectedDishes.reduce((totals, dish) => {
+
+const calculateTotalStatsForDate = (date) => {
+  const selectedDishes = mockData.filter(dish => dish.date === date);
+
+  const totalStats = selectedDishes.reduce((totals, dish) => {
+    // Only accumulate if dish type is not 'exercise'
+    if (dish.type !== 'exercise') {
       totals.calories += dish.calories;
       totals.carbs += dish.carbs || 0;
       totals.protein += dish.protein || 0;
       totals.fat += dish.fat || 0;
-      return totals;
-    }, { calories: 0, carbs: 0, protein: 0, fat: 0 });
-  
-    return totalStats;
-  }, [mockData]);
-  
-  const dailyStats = useMemo(() => {
-    return calculateTotalStatsForDate(selectedDate);
-  }, [selectedDate, calculateTotalStatsForDate]);
-  
+    }
+    return totals;
+  }, { calories: 0, carbs: 0, protein: 0, fat: 0 });
+
+  return totalStats;
+};
+
+
+  const dailyStats = calculateTotalStatsForDate(selectedDate);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -92,11 +92,11 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      setGreeting('Good morning,');
+      setGreeting('Buổi sáng tốt lành,');
     } else if (currentHour < 18) {
-      setGreeting('Good after noon,');
+      setGreeting('Buổi chiều vui vẻ,');
     } else {
-      setGreeting('Good evening,');
+      setGreeting('Buổi tối an lành,');
     }
   }, []);
 
@@ -125,9 +125,11 @@ const HomeScreen = ({ navigation }) => {
       <View className="flex-col">
         <View className="flex-row justify-between items-center mt-14">
           <View>
-            <Text className="text-white text-lg font-semibold ">Hello 👋</Text>
+            <Text className="text-white text-lg font-semibold ">Xin chào 👋</Text>
           </View>
-          <View className="flex-row items-center ">
+          <View className="flex-row items-center "
+            onPress={() => navigation.navigate('Root', { screen: 'Profile' })} 
+          >
             <TouchableOpacity onPress={toggleChatNavbar}>
               <Icon name="chatbubble-ellipses-outline" size={24} color="#FFFFFF" />
             </TouchableOpacity>
@@ -163,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
               }`}
           >
             <Text className={`text-base ${activeTab === 'Overview' ? 'text-white' : 'text-gray-400'}`}>
-              Overview
+              Dinh dưỡng
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -175,24 +177,24 @@ const HomeScreen = ({ navigation }) => {
               className={`text-base ${activeTab === 'Productivity' ? 'text-white' : 'text-gray-400'
                 }`}
             >
-              Productivity
+              Tập luyện
             </Text>
           </TouchableOpacity>
         </View>
       </View>
       {activeTab === 'Overview' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text className="text-white text-lg font-bold my-2">Recently played</Text>
-          <Category navigation={navigation}/>
+          <Text className="text-white text-lg font-bold my-2">Danh mục</Text>
+          <Category navigation={navigation} date={selectedDate} />
 
-          <Text className="text-white text-lg font-bold my-2">Your favorites</Text>
+          <Text className="text-white text-lg font-bold my-2">Sở thích của bạn</Text>
           <View className="flex-row justify-between mb-5">
             <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
               <Image
                 source={{ uri: 'https://example.com/train-your-mind-image.png' }}
                 className="w-full h-24 rounded-lg mb-2"
               />
-              <Text className="text-white text-base font-bold">Train your mind</Text>
+              <Text className="text-white text-base font-bold">Món ăn yêu thích</Text>
               <Text className="text-gray-400 text-sm">10 min</Text>
             </View>
             <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
@@ -200,7 +202,7 @@ const HomeScreen = ({ navigation }) => {
                 source={{ uri: 'https://example.com/sunset-image.png' }}
                 className="w-full h-24 rounded-lg mb-2"
               />
-              <Text className="text-white text-base font-bold">Sunset vibes</Text>
+              <Text className="text-white text-base font-bold">Thực đơn yêu thích</Text>
               <Text className="text-gray-400 text-sm">10 min</Text>
             </View>
           </View>
@@ -232,24 +234,51 @@ const HomeScreen = ({ navigation }) => {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Productivity Content */}
-          <Text className="text-white text-lg font-bold my-2">Boost Productivity</Text>
-          <View className="flex-row justify-between mb-5">
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={{ uri: 'https://example.com/focus-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Focus session</Text>
-              <Text className="text-gray-400 text-sm">30 min</Text>
+          <Text className="text-white text-lg font-bold my-2">Tập luyện</Text>
+          <View>
+            <View className="flex-row justify-between ">
+              <TouchableOpacity onPress={() => navigation.navigate('AllEx')} className="flex-row justify-between mb-5 ">
+                <View className="bg-[#1C2D5A] rounded-lg w-[70%] p-3">
+                  <Image
+                    source={{ uri: 'https://goalfive.com/cdn/shop/articles/ytocviog.jpg?v=1647957869&width=1500' }}
+                    className="h-24 w-full rounded-lg mb-2"
+                  />
+                  <Text className="text-white text-base font-bold">Tất cả bài tập</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Cardio')} className="flex-row justify-between right-16 mb-5">
+                <View className="bg-[#1C2D5A] rounded-lg w-[70%] p-3" >
+                  <Image
+                    source={{ uri: 'https://www.puregym.com/media/sqflb0zc/bodyweight.jpg?quality=80' }}
+                    className="w-full h-24 rounded-lg mb-2"
+                  />
+                  <Text className="text-white text-base font-bold">Tập cardio</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-            <View className="bg-[#1C2D5A] rounded-lg w-[48%] p-3">
-              <Image
-                source={{ uri: 'https://example.com/deep-work-image.png' }}
-                className="w-full h-24 rounded-lg mb-2"
-              />
-              <Text className="text-white text-base font-bold">Deep work</Text>
-              <Text className="text-gray-400 text-sm">45 min</Text>
+            <View className="flex-row justify-between mb-5">
+              <TouchableOpacity onPress={() => navigation.navigate('Power')} className="flex-row justify-between mb-5 ">
+                <View className="bg-[#1C2D5A] rounded-lg w-[70%] p-3">
+                  <Image
+                    source={{ uri: 'https://media.licdn.com/dms/image/v2/C4D12AQFhCV1IoIkYgw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1629733850803?e=2147483647&v=beta&t=7vV9v2Ef_qVynpFqUY0ZfSsozWDB3vx6hb0OKAUj78E' }}
+                    className="w-full h-24 rounded-lg mb-2"
+                  />
+                  <Text className="text-white text-base font-bold">Tập Thể lực</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Routine')} className="flex-row justify-between right-16 mb-5">
+                <View className="bg-[#1C2D5A] rounded-lg w-[70%] p-3" >
+                  <Image
+                    source={{ uri: 'https://cdn.shopify.com/s/files/1/0430/6533/files/diXrhtL1D7sVk35iU6TvEGLblXP8jZ011599238853.jpg?v=1600126266' }}
+                    className="w-full h-24 rounded-lg mb-2"
+                  />
+
+                  <Text className="text-white text-base font-bold">Tập Thể dục</Text>
+                </View>
+              </TouchableOpacity>
             </View>
+
+
           </View>
         </ScrollView>
       )}
@@ -271,8 +300,8 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity onPress={toggleChatNavbar}>
               <Icon name="close-outline" size={30} color="#FFFFFF" />
             </TouchableOpacity>
-            <Text className="text-rose-500 text-2xl font-bold">Chat</Text>
-            <Text className="text-white text-lg font-bold mb-5">What can I help with?</Text>
+            <Text className="text-rose-500 text-2xl font-bold">Bot dinh dưỡng</Text>
+            <Text className="text-white text-lg font-bold mb-5">Tôi có thể giúp gì cho bạn?</Text>
 
             {/* Chat Messages */}
             <ScrollView

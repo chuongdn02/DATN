@@ -1,3 +1,4 @@
+// AddFood.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,8 +11,17 @@ const AddFood = ({ navigation, route }) => {
     const [title, setTitle] = useState('');
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState(0);
-    const [collapsedSections, setCollapsedSections] = useState({});
     const foods = useSelector((state) => state.foods.foods);
+    const [collapsedSections, setCollapsedSections] = useState(() => {
+        const initialCollapseState = {};
+        foods.forEach((food) => {
+            if (!initialCollapseState[food.Type]) {
+                initialCollapseState[food.Type] = true; 
+            }
+        });
+        return initialCollapseState;
+    });
+
     const userId = useSelector((state) => state.auth.user.user.userId);
     const dispatch = useDispatch();
 
@@ -94,7 +104,11 @@ const AddFood = ({ navigation, route }) => {
 
             <View className="absolute bottom-16 right-0 space-y-2">
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('CrFood', { title: 'Tạo món ăn' })}
+                    onPress={() => navigation.navigate('CrFood', {
+                         title: 'Tạo món ăn' ,
+                         type: value,
+                         date: date
+                         })}
                     className="bg-green-400 rounded-l-[12px] p-3 justify-center items-center"
                 >
                     <Text className="font-bold text-lg">Tạo một món</Text>

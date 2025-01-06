@@ -73,6 +73,7 @@ const mealSchema = new mongoose.Schema({
        type: Number,
     }
 });
+
 const yourFoodSchema = new mongoose.Schema({
     Name: {
         type: String,
@@ -98,6 +99,7 @@ const yourFoodSchema = new mongoose.Schema({
        type: Number,
     }
 });
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,

@@ -49,6 +49,7 @@
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0",
+    "styled-components": "^6.1.13",
     "tailwindcss-react-native": "^1.7.10"
   },
   "devDependencies": {

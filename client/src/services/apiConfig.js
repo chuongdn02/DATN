@@ -7,5 +7,7 @@ export const API_ENDPOINTS = {
   GET_ALL_RECORDS: '/auth/user/${userId}/records',
   BMR : '/api/calculate',
   GET_ALL_FOOD:'/food',
+  GET_ALL_EXERCISE:'/exercise',
   ADD_MEAL: '/auth/users/${userId}/addMeal',
+  SUGGEST_FOOD: '/food/suggest',
 };

@@ -10,13 +10,18 @@ export const getChatCompletion = async (req, res) => {
   }
   try {
     const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: "[Bạn là một chuyên gia dinh dưỡng Tiếng Việt]"+message+"Hãy trả lời tất cả bằng Tiếng Việt, ngắn gọn, rõ ràng và chính xác",
-        },
-      ],
-      model: "gemma2-9b-it",
+     messages: [
+  {
+    role: "system",
+    content: "Bạn là một chuyên gia dinh dưỡng hàng đầu nói tiếng Việt. Nhiệm vụ của bạn là cung cấp câu trả lời ngắn gọn, chính xác và dễ hiểu cho các câu hỏi liên quan đến dinh dưỡng, sức khỏe và chế độ ăn uống. Hãy sử dụng văn phong chuyên nghiệp nhưng thân thiện."
+  },
+  {
+    role: "user",
+    content: message
+  }
+],
+model: "gemma2-9b-it"
+
     });
     res.json({
       content: chatCompletion.choices[0]?.message?.content || "",

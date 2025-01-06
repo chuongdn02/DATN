@@ -47,7 +47,6 @@ export const loginUser = (email, password) => async (dispatch) => {
         const response = await login(email, password);
         if (response && response.token) {
             const decoded = jwtDecode(response.token);
-            console.log(decoded);
             dispatch({
                 type: LOGIN_SUCCESS,
                 payload: { token: response.token, user: decoded },
@@ -130,9 +129,12 @@ export const getAllFood = (userId) => async (dispatch) => {
         dispatch({ type: GET_FOODS_FAILURE, payload: errorMessage });
     }
 };
+
+
 export const addFoodToUser = (userId, Name, Calories, Protein, Carbs, Fats, ration, quantity) => async (dispatch) => {
     try {
         const response = await addYourFood(userId, Name, Calories, Protein, Carbs, Fats, ration, quantity);
+
         dispatch({
             type: ADD_YOUR_FOOD_SUCCESS,
             payload: response,
